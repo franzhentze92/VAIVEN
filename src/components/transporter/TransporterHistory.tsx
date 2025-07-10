@@ -53,57 +53,57 @@ export default function TransporterHistory() {
     {
       id: 'H001',
       cargo: 'Electrodomésticos',
-      origin: 'Madrid',
-      destination: 'Barcelona',
+      origin: 'Ciudad de Guatemala',
+      destination: 'Quetzaltenango',
       status: 'completado',
       client: {
-        name: 'TechCorp Solutions',
+        name: 'Distribuidora Maya',
         rating: 4.9,
-        phone: '+34 600 123 456',
-        email: 'logistics@techcorp.com'
+        phone: '+502 1234-5678',
+        email: 'contacto@distribuidoramaya.com'
       },
       startDate: '2024-01-15',
       completionDate: '2024-01-16 14:30',
       deliveryTime: '30.5 horas',
-      distance: '625 km',
+      distance: '225 km',
       weight: '850 kg',
       volume: '12 m³',
-      price: '€650',
+      price: 'Q650',
       rating: 5,
       feedback: 'Excelente servicio, entrega puntual y en perfectas condiciones.',
-      earnings: '€650',
-      fuelCost: '€85',
-      netEarnings: '€565',
+      earnings: 'Q650',
+      fuelCost: 'Q85',
+      netEarnings: 'Q565',
       vehicleType: 'Camión Rígido',
       insurance: true,
       temperatureControl: false,
       onTime: true,
-      specialRequirements: ['Fragil', 'Asegurado']
+      specialRequirements: ['Frágil', 'Asegurado']
     },
     {
       id: 'H002',
       cargo: 'Material de Construcción',
-      origin: 'Sevilla',
-      destination: 'Valencia',
+      origin: 'Ciudad de Guatemala',
+      destination: 'Zacapa',
       status: 'completado',
       client: {
-        name: 'ConstructPro',
+        name: 'ConstruPro Guatemala',
         rating: 4.7,
-        phone: '+34 600 789 012',
-        email: 'shipping@constructpro.es'
+        phone: '+502 9876-5432',
+        email: 'info@construproguatemala.com'
       },
       startDate: '2024-01-14',
       completionDate: '2024-01-15 10:00',
       deliveryTime: '26 horas',
-      distance: '450 km',
+      distance: '150 km',
       weight: '1200 kg',
       volume: '8 m³',
-      price: '€480',
+      price: 'Q480',
       rating: 4,
       feedback: 'Buen servicio, pero llegó 30 minutos tarde.',
-      earnings: '€480',
-      fuelCost: '€65',
-      netEarnings: '€415',
+      earnings: 'Q480',
+      fuelCost: 'Q65',
+      netEarnings: 'Q415',
       vehicleType: 'Tráiler',
       insurance: false,
       temperatureControl: false,
@@ -113,27 +113,27 @@ export default function TransporterHistory() {
     {
       id: 'H003',
       cargo: 'Productos Textiles',
-      origin: 'Bilbao',
-      destination: 'Zaragoza',
+      origin: 'Ciudad de Guatemala',
+      destination: 'Huehuetenango',
       status: 'completado',
       client: {
-        name: 'Fashion Express',
+        name: 'Express Fashion',
         rating: 4.8,
-        phone: '+34 600 345 678',
-        email: 'logistics@fashion-express.com'
+        phone: '+502 1122-3344',
+        email: 'ventas@expressfashion.com'
       },
       startDate: '2024-01-13',
       completionDate: '2024-01-13 16:30',
       deliveryTime: '8.5 horas',
-      distance: '320 km',
+      distance: '180 km',
       weight: '300 kg',
       volume: '25 m³',
-      price: '€420',
+      price: 'Q420',
       rating: 5,
       feedback: 'Servicio excepcional, muy profesional.',
-      earnings: '€420',
-      fuelCost: '€45',
-      netEarnings: '€375',
+      earnings: 'Q420',
+      fuelCost: 'Q45',
+      netEarnings: 'Q375',
       vehicleType: 'Furgoneta',
       insurance: true,
       temperatureControl: false,
@@ -143,57 +143,57 @@ export default function TransporterHistory() {
     {
       id: 'H004',
       cargo: 'Equipos Informáticos',
-      origin: 'Valencia',
-      destination: 'Madrid',
+      origin: 'Ciudad de Guatemala',
+      destination: 'Ciudad de Guatemala',
       status: 'completado',
       client: {
         name: 'IT Solutions Pro',
         rating: 4.6,
-        phone: '+34 600 901 234',
-        email: 'shipping@itsolutions.es'
+        phone: '+502 5566-7788',
+        email: 'info@itsolutions.com'
       },
       startDate: '2024-01-12',
       completionDate: '2024-01-12 15:45',
       deliveryTime: '7.75 horas',
-      distance: '355 km',
+      distance: '100 km',
       weight: '450 kg',
       volume: '6 m³',
-      price: '€380',
+      price: 'Q380',
       rating: 4,
       feedback: 'Buen servicio, pero llegó 15 minutos tarde.',
-      earnings: '€380',
-      fuelCost: '€52',
-      netEarnings: '€328',
+      earnings: 'Q380',
+      fuelCost: 'Q52',
+      netEarnings: 'Q328',
       vehicleType: 'Camión Rígido',
       insurance: true,
       temperatureControl: true,
       onTime: false,
-      specialRequirements: ['Fragil', 'Asegurado', 'Temperatura controlada']
+      specialRequirements: ['Frágil', 'Asegurado', 'Temperatura controlada']
     },
     {
       id: 'H005',
       cargo: 'Productos Alimentarios',
-      origin: 'Alicante',
-      destination: 'Murcia',
+      origin: 'Ciudad de Guatemala',
+      destination: 'Ciudad de Guatemala',
       status: 'completado',
       client: {
         name: 'FreshFood Express',
         rating: 4.5,
-        phone: '+34 600 567 890',
-        email: 'logistics@freshfood.com'
+        phone: '+502 9900-1122',
+        email: 'ventas@freshfood.com'
       },
       startDate: '2024-01-11',
       completionDate: '2024-01-11 10:30',
       deliveryTime: '2.5 horas',
-      distance: '75 km',
+      distance: '50 km',
       weight: '800 kg',
       volume: '15 m³',
-      price: '€720',
+      price: 'Q720',
       rating: 5,
       feedback: 'Entrega perfecta, productos en excelente estado.',
-      earnings: '€720',
-      fuelCost: '€15',
-      netEarnings: '€705',
+      earnings: 'Q720',
+      fuelCost: 'Q15',
+      netEarnings: 'Q705',
       vehicleType: 'Camión Refrigerado',
       insurance: true,
       temperatureControl: true,
@@ -203,27 +203,27 @@ export default function TransporterHistory() {
     {
       id: 'H006',
       cargo: 'Maquinaria Industrial',
-      origin: 'Zaragoza',
-      destination: 'Bilbao',
+      origin: 'Ciudad de Guatemala',
+      destination: 'Ciudad de Guatemala',
       status: 'completado',
       client: {
         name: 'Industrial Parts Co.',
         rating: 4.3,
-        phone: '+34 600 123 789',
-        email: 'shipping@industrialparts.es'
+        phone: '+502 1111-2222',
+        email: 'info@industrialparts.com'
       },
       startDate: '2024-01-10',
       completionDate: '2024-01-11 12:00',
       deliveryTime: '28 horas',
-      distance: '320 km',
+      distance: '150 km',
       weight: '1800 kg',
       volume: '30 m³',
-      price: '€950',
+      price: 'Q950',
       rating: 4,
       feedback: 'Llegó un día tarde pero en perfecto estado.',
-      earnings: '€950',
-      fuelCost: '€120',
-      netEarnings: '€830',
+      earnings: 'Q950',
+      fuelCost: 'Q120',
+      netEarnings: 'Q830',
       vehicleType: 'Mega Tráiler',
       insurance: true,
       temperatureControl: false,
@@ -264,9 +264,9 @@ export default function TransporterHistory() {
   const sortedHistory = [...filteredHistory].sort((a, b) => {
     switch (sortBy) {
       case 'date': return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
-      case 'price': return Number(b.price.replace('€', '')) - Number(a.price.replace('€', ''));
+      case 'price': return Number(b.price.replace('Q', '')) - Number(a.price.replace('Q', ''));
       case 'rating': return b.rating - a.rating;
-      case 'earnings': return Number(b.netEarnings.replace('€', '')) - Number(a.netEarnings.replace('€', ''));
+      case 'earnings': return Number(b.netEarnings.replace('Q', '')) - Number(a.netEarnings.replace('Q', ''));
       default: return 0;
     }
   });
@@ -286,7 +286,7 @@ export default function TransporterHistory() {
     },
     { 
       title: 'Ganancias Netas', 
-      value: '€2,388', 
+      value: 'Q2,388', 
       change: '+12%', 
       changeType: 'positive',
       icon: Euro, 
@@ -613,7 +613,7 @@ export default function TransporterHistory() {
                         <p className="text-sm text-gray-600">{stat.deliveries} entregas</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium text-blue-600">€{stat.earnings}</p>
+                        <p className="font-medium text-blue-600">Q{stat.earnings}</p>
                         <div className="flex items-center space-x-1">
                           <Star className="h-3 w-3 text-yellow-500 fill-current" />
                           <span className="text-sm text-gray-600">{stat.rating}</span>
@@ -707,7 +707,7 @@ export default function TransporterHistory() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Ganancias promedio</span>
-                    <span className="font-medium">€536</span>
+                    <span className="font-medium">Q536</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Distancia promedio</span>

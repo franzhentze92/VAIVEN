@@ -47,8 +47,8 @@ export default function ViewCargo() {
     {
       id: 'C001',
       title: 'Electrodomésticos',
-      origin: 'Madrid',
-      destination: 'Barcelona',
+      origin: 'Ciudad de Guatemala',
+      destination: 'Quetzaltenango',
       weight: 850,
       volume: '12 m³',
       price: 650,
@@ -58,15 +58,15 @@ export default function ViewCargo() {
       rating: 4.8,
       urgency: 'normal',
       vehicleType: 'Camión Rígido',
-      specialRequirements: ['Fragil', 'Asegurado'],
+      specialRequirements: ['Frágil', 'Asegurado'],
       client: {
-        name: 'TechCorp Solutions',
+        name: 'Distribuidora Maya',
         rating: 4.9,
         completedDeliveries: 45,
-        phone: '+34 600 123 456',
-        email: 'logistics@techcorp.com'
+        phone: '+502 1234-5678',
+        email: 'contacto@distribuidoramaya.com'
       },
-      distance: '625 km',
+      distance: '225 km',
       estimatedTime: '6-8 horas',
       insurance: true,
       temperatureControl: false
@@ -74,8 +74,8 @@ export default function ViewCargo() {
     {
       id: 'C002',
       title: 'Material de Construcción',
-      origin: 'Sevilla',
-      destination: 'Valencia',
+      origin: 'Escuintla',
+      destination: 'Retalhuleu',
       weight: 1200,
       volume: '8 m³',
       price: 480,
@@ -87,13 +87,13 @@ export default function ViewCargo() {
       vehicleType: 'Tráiler',
       specialRequirements: ['Peso pesado'],
       client: {
-        name: 'ConstructPro',
+        name: 'Constructora Nacional',
         rating: 4.7,
         completedDeliveries: 23,
-        phone: '+34 600 789 012',
-        email: 'shipping@constructpro.es'
+        phone: '+502 2345-6789',
+        email: 'envios@constructora.com.gt'
       },
-      distance: '450 km',
+      distance: '180 km',
       estimatedTime: '5-6 horas',
       insurance: false,
       temperatureControl: false
@@ -101,8 +101,8 @@ export default function ViewCargo() {
     {
       id: 'C003',
       title: 'Productos Textiles',
-      origin: 'Bilbao',
-      destination: 'Zaragoza',
+      origin: 'Ciudad de Guatemala',
+      destination: 'Zacapa',
       weight: 300,
       volume: '25 m³',
       price: 420,
@@ -117,10 +117,10 @@ export default function ViewCargo() {
         name: 'Fashion Express',
         rating: 4.8,
         completedDeliveries: 67,
-        phone: '+34 600 345 678',
-        email: 'logistics@fashion-express.com'
+        phone: '+502 3456-7890',
+        email: 'logistica@fashion-express.com'
       },
-      distance: '320 km',
+      distance: '150 km',
       estimatedTime: '4-5 horas',
       insurance: true,
       temperatureControl: false
@@ -128,8 +128,8 @@ export default function ViewCargo() {
     {
       id: 'C004',
       title: 'Equipos Informáticos',
-      origin: 'Valencia',
-      destination: 'Madrid',
+      origin: 'Ciudad de Guatemala',
+      destination: 'Ciudad de Guatemala',
       weight: 450,
       volume: '6 m³',
       price: 380,
@@ -139,15 +139,15 @@ export default function ViewCargo() {
       rating: 4.7,
       urgency: 'high',
       vehicleType: 'Camión Rígido',
-      specialRequirements: ['Fragil', 'Asegurado', 'Temperatura controlada'],
+      specialRequirements: ['Frágil', 'Asegurado', 'Temperatura controlada'],
       client: {
         name: 'IT Solutions Pro',
         rating: 4.6,
         completedDeliveries: 34,
-        phone: '+34 600 901 234',
-        email: 'shipping@itsolutions.es'
+        phone: '+502 4567-8901',
+        email: 'envios@itsolutions.com.gt'
       },
-      distance: '355 km',
+      distance: '100 km',
       estimatedTime: '4-5 horas',
       insurance: true,
       temperatureControl: true
@@ -155,8 +155,8 @@ export default function ViewCargo() {
     {
       id: 'C005',
       title: 'Productos Alimentarios',
-      origin: 'Alicante',
-      destination: 'Murcia',
+      origin: 'Ciudad de Guatemala',
+      destination: 'Ciudad de Guatemala',
       weight: 800,
       volume: '15 m³',
       price: 720,
@@ -171,10 +171,10 @@ export default function ViewCargo() {
         name: 'FreshFood Express',
         rating: 4.5,
         completedDeliveries: 89,
-        phone: '+34 600 567 890',
-        email: 'logistics@freshfood.com'
+        phone: '+502 5678-9012',
+        email: 'logistica@freshfood.com'
       },
-      distance: '75 km',
+      distance: '20 km',
       estimatedTime: '1-2 horas',
       insurance: true,
       temperatureControl: true
@@ -182,8 +182,8 @@ export default function ViewCargo() {
     {
       id: 'C006',
       title: 'Maquinaria Industrial',
-      origin: 'Zaragoza',
-      destination: 'Bilbao',
+      origin: 'Ciudad de Guatemala',
+      destination: 'Ciudad de Guatemala',
       weight: 1800,
       volume: '30 m³',
       price: 950,
@@ -198,10 +198,10 @@ export default function ViewCargo() {
         name: 'Industrial Parts Co.',
         rating: 4.3,
         completedDeliveries: 12,
-        phone: '+34 600 123 789',
-        email: 'shipping@industrialparts.es'
+        phone: '+502 6789-0123',
+        email: 'envios@industrialparts.com.gt'
       },
-      distance: '320 km',
+      distance: '100 km',
       estimatedTime: '4-6 horas',
       insurance: true,
       temperatureControl: false
@@ -270,7 +270,7 @@ export default function ViewCargo() {
     },
     { 
       label: 'Precio Promedio', 
-      value: `€${Math.round(availableCargo.reduce((sum, c) => sum + c.price, 0) / availableCargo.length)}`, 
+      value: `Q${Math.round(availableCargo.reduce((sum, c) => sum + c.price, 0) / availableCargo.length)}`, 
       icon: Euro, 
       color: 'text-blue-600',
       change: '+5%',
@@ -385,7 +385,7 @@ export default function ViewCargo() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-700">Rango de Precio: €{priceRange[0]} - €{priceRange[1]}</Label>
+              <Label className="text-sm font-medium text-gray-700">Rango de Precio: Q{priceRange[0]} - Q{priceRange[1]}</Label>
               <Slider
                 value={priceRange}
                 onValueChange={setPriceRange}
@@ -471,7 +471,7 @@ export default function ViewCargo() {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600">Precio:</span>
-                        <span className="text-lg font-bold text-blue-500">€{cargo.price}</span>
+                        <span className="text-lg font-bold text-blue-500">Q{cargo.price}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600">Tiempo estimado:</span>

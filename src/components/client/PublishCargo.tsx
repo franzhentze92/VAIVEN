@@ -14,6 +14,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Separator } from '@/components/ui/separator';
 import { CalendarIcon, Upload, Package, Truck, DollarSign, Clock, Search, Filter, MapPin, Weight, Ruler, FileText, MessageSquare, Phone, Star, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
+import { useToast } from '@/components/ui/use-toast';
+import { motion, AnimatePresence } from 'framer-motion';
+const MotionTableRow = motion(TableRow);
 
 // Mock data for published cargo
 const mockPublishedCargo = [
@@ -149,6 +152,30 @@ const mockOffers = [
   }
 ];
 
+const guatemalaCities = [
+  'Ciudad de Guatemala',
+  'Antigua Guatemala',
+  'Quetzaltenango',
+  'Escuintla',
+  'Puerto Barrios',
+  'Cobán',
+  'Chimaltenango',
+  'Sacatepéquez',
+  'Retalhuleu',
+  'Huehuetenango',
+  'Petén',
+  'Alta Verapaz',
+  'Jalapa',
+  'Jutiapa',
+  'Zacapa',
+  'Izabal',
+  'Santa Rosa',
+  'Suchitepéquez',
+  'Sololá',
+  'Totonicapán',
+  'San Marcos',
+];
+
 export default function PublishCargo() {
   const [date, setDate] = useState<Date>();
   const [activeTab, setActiveTab] = useState('publish');
@@ -164,10 +191,16 @@ export default function PublishCargo() {
     description: '',
     budget: ''
   });
+  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Cargo published:', { ...formData, date });
+    toast({
+      title: '¡Carga publicada!',
+      description: 'Tu carga ha sido publicada exitosamente y está disponible para transportistas en Guatemala.',
+      variant: 'default',
+    });
     // Reset form
     setFormData({
       origin: '',
@@ -198,16 +231,13 @@ export default function PublishCargo() {
 
   const getStatusBadge = (status: string) => {
     const statusStyles = {
-      'Activo': 'bg-green-100 text-green-800 border-green-200',
-      'En Proceso': 'bg-blue-100 text-blue-800 border-blue-200',
-      'Completado': 'bg-purple-100 text-purple-800 border-purple-200',
-      'Pendiente': 'bg-yellow-100 text-yellow-800 border-yellow-200'
+      'Activo': 'bg-blue-100 text-blue-800 border-blue-200',
+      'En Proceso': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+      'Completado': 'bg-green-100 text-green-800 border-green-200',
+      'Pendiente': 'bg-gray-100 text-gray-800 border-gray-200',
+      'Rechazada': 'bg-red-100 text-red-800 border-red-200'
     };
-    return (
-      <Badge className={`${statusStyles[status as keyof typeof statusStyles]} font-semibold`}>
-        {status}
-      </Badge>
-    );
+    return `${statusStyles[status as keyof typeof statusStyles]} font-semibold`;
   };
 
   const getOfferStatusBadge = (status: string) => {
@@ -229,521 +259,188 @@ export default function PublishCargo() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">Gestión de Carga</h1>
-        <p className="text-blue-600">Publica nueva carga y gestiona tus envíos existentes</p>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-1">Publicar Nueva Carga</h1>
+          <p className="text-blue-600">Completa el formulario para publicar un envío en Guatemala.</p>
+        </div>
       </div>
-
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="border-0 bg-gradient-to-br from-blue-50 to-indigo-50 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-blue-600">Total Cargas</p>
-                <p className="text-2xl font-bold text-blue-800">{totalCargo}</p>
-              </div>
-              <Package className="h-8 w-8 text-blue-500" />
+      <Card className="border-0 bg-white/80 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold text-blue-900">Datos de la Carga</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <Label>Origen</Label>
+             <Select
+               value={formData.origin}
+               onValueChange={value => setFormData({ ...formData, origin: value })}
+               required
+             >
+               <SelectTrigger>
+                 <SelectValue placeholder="Selecciona ciudad de origen" />
+               </SelectTrigger>
+               <SelectContent>
+                 {guatemalaCities.map(city => (
+                   <SelectItem key={city} value={city}>{city}</SelectItem>
+                 ))}
+               </SelectContent>
+             </Select>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 bg-gradient-to-br from-green-50 to-emerald-50 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-green-600">Cargas Activas</p>
-                <p className="text-2xl font-bold text-green-800">{activeCargo}</p>
-              </div>
-              <Truck className="h-8 w-8 text-green-500" />
+            <div>
+              <Label>Destino</Label>
+             <Select
+               value={formData.destination}
+               onValueChange={value => setFormData({ ...formData, destination: value })}
+               required
+             >
+               <SelectTrigger>
+                 <SelectValue placeholder="Selecciona ciudad de destino" />
+               </SelectTrigger>
+               <SelectContent>
+                 {guatemalaCities.map(city => (
+                   <SelectItem key={city} value={city}>{city}</SelectItem>
+                 ))}
+               </SelectContent>
+             </Select>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 bg-gradient-to-br from-purple-50 to-violet-50 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-purple-600">Presupuesto Total</p>
-                <p className="text-2xl font-bold text-purple-800">Q {totalBudget.toLocaleString()}</p>
-              </div>
-              <DollarSign className="h-8 w-8 text-purple-500" />
+            <div>
+              <Label>Tipo de Carga</Label>
+              <Input
+                value={formData.cargoType}
+                onChange={e => setFormData({ ...formData, cargoType: e.target.value })}
+                placeholder="Ej: General, Frágil, Perecedero, Peligroso"
+                required
+              />
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 bg-gradient-to-br from-orange-50 to-amber-50 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-orange-600">Promedio Ofertas</p>
-                <p className="text-2xl font-bold text-orange-800">{avgOffers.toFixed(1)}</p>
-              </div>
-              <Clock className="h-8 w-8 text-orange-500" />
+            <div>
+              <Label>Peso (kg)</Label>
+              <Input
+                value={formData.weight}
+                onChange={e => setFormData({ ...formData, weight: e.target.value })}
+                placeholder="Ej: 500"
+                required
+              />
             </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 bg-white/80 backdrop-blur-sm border-2 border-blue-200">
-          <TabsTrigger value="publish" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white">Publicar Nueva Carga</TabsTrigger>
-          <TabsTrigger value="manage" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white">Gestionar Cargas</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="publish" className="mt-6">
-          <Card className="border-0 bg-white/80 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500 max-w-3xl mx-auto">
-            <CardHeader className="pb-0">
-              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Detalles de la Carga</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <form onSubmit={handleSubmit} className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="origin" className="text-blue-800 font-semibold">Origen</Label>
-                    <Input
-                      id="origin"
-                      value={formData.origin}
-                      onChange={(e) => setFormData({...formData, origin: e.target.value})}
-                      placeholder="Ciudad de origen"
-                      className="border-2 border-blue-200 focus:border-blue-500 bg-white/70"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="destination" className="text-blue-800 font-semibold">Destino</Label>
-                    <Input
-                      id="destination"
-                      value={formData.destination}
-                      onChange={(e) => setFormData({...formData, destination: e.target.value})}
-                      placeholder="Ciudad de destino"
-                      className="border-2 border-blue-200 focus:border-blue-500 bg-white/70"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label className="text-blue-800 font-semibold">Tipo de Carga</Label>
-                    <Select value={formData.cargoType} onValueChange={(value) => setFormData({...formData, cargoType: value})}>
-                      <SelectTrigger className="border-2 border-blue-200 bg-white/70">
-                        <SelectValue placeholder="Selecciona tipo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="general">Carga General</SelectItem>
-                        <SelectItem value="fragile">Frágil</SelectItem>
-                        <SelectItem value="perishable">Perecedero</SelectItem>
-                        <SelectItem value="dangerous">Peligroso</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label className="text-blue-800 font-semibold">Fecha de Recogida</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full justify-start text-left font-normal border-2 border-blue-200 bg-white/70 hover:bg-blue-50">
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {date ? format(date, 'PPP') : 'Selecciona fecha'}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="weight" className="text-blue-800 font-semibold">Peso (kg)</Label>
-                    <Input
-                      id="weight"
-                      type="number"
-                      value={formData.weight}
-                      onChange={(e) => setFormData({...formData, weight: e.target.value})}
-                      placeholder="Peso en kilogramos"
-                      className="border-2 border-blue-200 focus:border-blue-500 bg-white/70"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="budget" className="text-blue-800 font-semibold">Presupuesto (Q)</Label>
-                    <Input
-                      id="budget"
-                      type="number"
-                      value={formData.budget}
-                      onChange={(e) => setFormData({...formData, budget: e.target.value})}
-                      placeholder="Presupuesto estimado"
-                      className="border-2 border-blue-200 focus:border-blue-500 bg-white/70"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="dimensions" className="text-blue-800 font-semibold">Dimensiones</Label>
-                  <Input
-                    id="dimensions"
-                    value={formData.dimensions}
-                    onChange={(e) => setFormData({...formData, dimensions: e.target.value})}
-                    placeholder="Largo x Ancho x Alto (cm)"
-                    className="border-2 border-blue-200 focus:border-blue-500 bg-white/70"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="description" className="text-blue-800 font-semibold">Descripción</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    placeholder="Describe tu carga en detalle"
-                    className="border-2 border-blue-200 focus:border-blue-500 bg-white/70"
-                    rows={3}
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-blue-800 font-semibold">Fotos de la Carga</Label>
-                  <div className="border-2 border-dashed border-blue-300 rounded-xl p-8 text-center bg-blue-50/50 hover:bg-blue-100 transition-all">
-                    <Upload className="mx-auto h-12 w-12 text-blue-400" />
-                    <p className="mt-2 text-sm text-blue-600">Arrastra fotos aquí o haz clic para seleccionar</p>
-                    <Button type="button" variant="outline" className="mt-2 border-2 border-blue-200 text-blue-700 hover:bg-blue-50 font-semibold">
-                      Seleccionar Fotos
-                    </Button>
-                  </div>
-                </div>
-
-                <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg py-4 text-lg rounded-xl">
-                  Publicar Carga
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="manage" className="mt-6">
-          <Card className="border-0 bg-white/80 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Mis Cargas Publicadas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {/* Filters */}
-              <div className="flex flex-col md:flex-row gap-4 mb-6">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 h-4 w-4" />
-                  <Input
-                    placeholder="Buscar por origen, destino o tipo..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 border-2 border-blue-200 focus:border-blue-500 bg-white/70"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-48 border-2 border-blue-200 bg-white/70">
-                      <SelectValue placeholder="Filtrar por estado" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos los Estados</SelectItem>
-                      <SelectItem value="Activo">Activo</SelectItem>
-                      <SelectItem value="En Proceso">En Proceso</SelectItem>
-                      <SelectItem value="Completado">Completado</SelectItem>
-                      <SelectItem value="Pendiente">Pendiente</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button variant="outline" className="border-2 border-blue-200 text-blue-700 hover:bg-blue-50">
-                    <Filter className="h-4 w-4 mr-2" />
-                    Más Filtros
-                  </Button>
-                </div>
-              </div>
-
-              {/* Table */}
-              <div className="rounded-xl border-2 border-blue-200 overflow-hidden">
-                <Table>
-                  <TableHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
-                    <TableRow>
-                      <TableHead className="text-blue-800 font-semibold">ID</TableHead>
-                      <TableHead className="text-blue-800 font-semibold">Origen</TableHead>
-                      <TableHead className="text-blue-800 font-semibold">Destino</TableHead>
-                      <TableHead className="text-blue-800 font-semibold">Tipo</TableHead>
-                      <TableHead className="text-blue-800 font-semibold">Peso</TableHead>
-                      <TableHead className="text-blue-800 font-semibold">Presupuesto</TableHead>
-                      <TableHead className="text-blue-800 font-semibold">Estado</TableHead>
-                      <TableHead className="text-blue-800 font-semibold">Fecha</TableHead>
-                      <TableHead className="text-blue-800 font-semibold">Ofertas</TableHead>
-                      <TableHead className="text-blue-800 font-semibold">Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredCargo.map((cargo) => (
-                      <TableRow key={cargo.id} className="hover:bg-blue-50/50 transition-colors">
-                        <TableCell className="font-medium text-blue-800">#{cargo.id}</TableCell>
-                        <TableCell className="text-blue-700">{cargo.origin}</TableCell>
-                        <TableCell className="text-blue-700">{cargo.destination}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50">
-                            {cargo.cargoType}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-blue-700">{cargo.weight}</TableCell>
-                        <TableCell className="font-semibold text-blue-800">{cargo.budget}</TableCell>
-                        <TableCell>{getStatusBadge(cargo.status)}</TableCell>
-                        <TableCell className="text-blue-700">{cargo.date}</TableCell>
-                        <TableCell>
-                          <Badge className="bg-orange-100 text-orange-800 border-orange-200">
-                            {cargo.offers} ofertas
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline" 
-                                  className="border-blue-200 text-blue-700 hover:bg-blue-50"
-                                  onClick={() => handleViewCargo(cargo)}
-                                >
-                                  Ver
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                                <DialogHeader>
-                                  <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                                    Detalles de Carga #{cargo.id}
-                                  </DialogTitle>
-                                </DialogHeader>
-                                
-                                <div className="space-y-6">
-                                  {/* Basic Information */}
-                                  <Card className="border-2 border-blue-200 bg-blue-50/30">
-                                    <CardHeader>
-                                      <CardTitle className="text-lg text-blue-800 flex items-center gap-2">
-                                        <Package className="h-5 w-5" />
-                                        Información Básica
-                                      </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="flex items-center gap-2">
-                                          <MapPin className="h-4 w-4 text-blue-500" />
-                                          <div>
-                                            <p className="text-sm text-blue-600">Origen</p>
-                                            <p className="font-semibold text-blue-800">{cargo.origin}</p>
-                                          </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                          <MapPin className="h-4 w-4 text-green-500" />
-                                          <div>
-                                            <p className="text-sm text-blue-600">Destino</p>
-                                            <p className="font-semibold text-blue-800">{cargo.destination}</p>
-                                          </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                          <Weight className="h-4 w-4 text-orange-500" />
-                                          <div>
-                                            <p className="text-sm text-blue-600">Peso</p>
-                                            <p className="font-semibold text-blue-800">{cargo.weight}</p>
-                                          </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                          <Ruler className="h-4 w-4 text-purple-500" />
-                                          <div>
-                                            <p className="text-sm text-blue-600">Dimensiones</p>
-                                            <p className="font-semibold text-blue-800">{cargo.dimensions}</p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="flex items-center gap-2">
-                                        <DollarSign className="h-4 w-4 text-green-500" />
-                                        <div>
-                                          <p className="text-sm text-blue-600">Presupuesto</p>
-                                          <p className="font-semibold text-blue-800">{cargo.budget}</p>
-                                        </div>
-                                      </div>
-                                    </CardContent>
-                                  </Card>
-
-                                  {/* Description and Requirements */}
-                                  <Card className="border-2 border-blue-200 bg-blue-50/30">
-                                    <CardHeader>
-                                      <CardTitle className="text-lg text-blue-800 flex items-center gap-2">
-                                        <FileText className="h-5 w-5" />
-                                        Descripción y Requisitos
-                                      </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                      <div>
-                                        <p className="text-sm text-blue-600 mb-2">Descripción</p>
-                                        <p className="text-blue-800">{cargo.description}</p>
-                                      </div>
-                                      <div>
-                                        <p className="text-sm text-blue-600 mb-2">Requisitos Especiales</p>
-                                        <p className="text-blue-800">{cargo.specialRequirements}</p>
-                                      </div>
-                                    </CardContent>
-                                  </Card>
-
-                                  {/* Dates and Status */}
-                                  <Card className="border-2 border-blue-200 bg-blue-50/30">
-                                    <CardHeader>
-                                      <CardTitle className="text-lg text-blue-800 flex items-center gap-2">
-                                        <CalendarIcon className="h-5 w-5" />
-                                        Fechas y Estado
-                                      </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div>
-                                          <p className="text-sm text-blue-600">Fecha de Publicación</p>
-                                          <p className="font-semibold text-blue-800">{cargo.date}</p>
-                                        </div>
-                                        <div>
-                                          <p className="text-sm text-blue-600">Fecha de Recogida</p>
-                                          <p className="font-semibold text-blue-800">{cargo.pickupDate}</p>
-                                        </div>
-                                        <div>
-                                          <p className="text-sm text-blue-600">Fecha de Entrega</p>
-                                          <p className="font-semibold text-blue-800">{cargo.deliveryDate}</p>
-                                        </div>
-                                      </div>
-                                      <div className="flex items-center gap-2">
-                                        <p className="text-sm text-blue-600">Estado:</p>
-                                        {getStatusBadge(cargo.status)}
-                                      </div>
-                                    </CardContent>
-                                  </Card>
-
-                                  {/* Contact Information */}
-                                  <Card className="border-2 border-blue-200 bg-blue-50/30">
-                                    <CardHeader>
-                                      <CardTitle className="text-lg text-blue-800 flex items-center gap-2">
-                                        <MessageSquare className="h-5 w-5" />
-                                        Información de Contacto
-                                      </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="flex items-center gap-2">
-                                          <Phone className="h-4 w-4 text-blue-500" />
-                                          <div>
-                                            <p className="text-sm text-blue-600">Teléfono</p>
-                                            <p className="font-semibold text-blue-800">{cargo.contactPhone}</p>
-                                          </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                          <MessageSquare className="h-4 w-4 text-green-500" />
-                                          <div>
-                                            <p className="text-sm text-blue-600">Email</p>
-                                            <p className="font-semibold text-blue-800">{cargo.contactEmail}</p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </CardContent>
-                                  </Card>
-
-                                  {/* Offers */}
-                                  <Card className="border-2 border-blue-200 bg-blue-50/30">
-                                    <CardHeader>
-                                      <CardTitle className="text-lg text-blue-800 flex items-center gap-2">
-                                        <Truck className="h-5 w-5" />
-                                        Ofertas Recibidas ({mockOffers.length})
-                                      </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                      <div className="space-y-4">
-                                        {mockOffers.map((offer) => (
-                                          <div key={offer.id} className="border-2 border-blue-200 rounded-lg p-4 bg-white/70">
-                                            <div className="flex justify-between items-start mb-3">
-                                              <div>
-                                                <h4 className="font-semibold text-blue-800">{offer.transporterName}</h4>
-                                                <div className="flex items-center gap-2 mt-1">
-                                                  <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                                                  <span className="text-sm text-blue-600">{offer.rating} ({offer.reviews} reseñas)</span>
-                                                </div>
-                                              </div>
-                                              <div className="text-right">
-                                                <p className="text-lg font-bold text-blue-800">{offer.price}</p>
-                                                <p className="text-sm text-blue-600">{offer.estimatedTime}</p>
-                                              </div>
-                                            </div>
-                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                                              <div>
-                                                <p className="text-blue-600">Vehículo</p>
-                                                <p className="font-medium text-blue-800">{offer.vehicle}</p>
-                                              </div>
-                                              <div>
-                                                <p className="text-blue-600">Experiencia</p>
-                                                <p className="font-medium text-blue-800">{offer.experience}</p>
-                                              </div>
-                                              <div>
-                                                <p className="text-blue-600">Teléfono</p>
-                                                <p className="font-medium text-blue-800">{offer.phone}</p>
-                                              </div>
-                                              <div>
-                                                <p className="text-blue-600">Estado</p>
-                                                {getOfferStatusBadge(offer.status)}
-                                              </div>
-                                            </div>
-                                            <div className="flex gap-2 mt-4">
-                                              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                                                <CheckCircle className="h-4 w-4 mr-1" />
-                                                Aceptar
-                                              </Button>
-                                              <Button size="sm" variant="outline" className="border-red-200 text-red-700 hover:bg-red-50">
-                                                <XCircle className="h-4 w-4 mr-1" />
-                                                Rechazar
-                                              </Button>
-                                              <Button size="sm" variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50">
-                                                <MessageSquare className="h-4 w-4 mr-1" />
-                                                Contactar
-                                              </Button>
-                                            </div>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </CardContent>
-                                  </Card>
-
-                                  {/* Actions */}
-                                  <div className="flex gap-4 justify-end">
-                                    <Button variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50">
-                                      <FileText className="h-4 w-4 mr-2" />
-                                      Descargar PDF
-                                    </Button>
-                                    <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                                      <MessageSquare className="h-4 w-4 mr-2" />
-                                      Contactar Soporte
-                                    </Button>
-                                  </div>
-                                </div>
-                              </DialogContent>
-                            </Dialog>
-                            <Button size="sm" variant="outline" className="border-green-200 text-green-700 hover:bg-green-50">
-                              Editar
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {filteredCargo.length === 0 && (
-                <div className="text-center py-8">
-                  <Package className="mx-auto h-12 w-12 text-blue-400 mb-4" />
-                  <p className="text-blue-600">No se encontraron cargas que coincidan con los filtros</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            <div>
+              <Label>Dimensiones (cm)</Label>
+              <Input
+                value={formData.dimensions}
+                onChange={e => setFormData({ ...formData, dimensions: e.target.value })}
+                placeholder="Ej: 120 x 80 x 60"
+                required
+              />
+            </div>
+            <div>
+              <Label>Presupuesto (Q)</Label>
+              <Input
+                value={formData.budget}
+                onChange={e => setFormData({ ...formData, budget: e.target.value })}
+                placeholder="Ej: 2500"
+                required
+                type="number"
+                min="0"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label>Descripción</Label>
+              <Textarea
+                value={formData.description}
+                onChange={e => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Describe los detalles y requisitos especiales de la carga"
+                required
+              />
+            </div>
+            <div className="md:col-span-2 flex justify-end">
+              <Button
+                type="submit"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-lg hover:from-blue-700 hover:to-indigo-700 px-8 py-2"
+              >
+                Publicar Carga
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+      {/* Listado de cargas publicadas */}
+      <Card className="border-0 bg-white/80 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold text-blue-900">Tus Cargas Publicadas</CardTitle>
+        </CardHeader>
+        <CardContent>
+         <AnimatePresence>
+            {filteredCargo.length === 0 ? (
+             <motion.div
+               key="empty"
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               exit={{ opacity: 0 }}
+               className="text-center text-blue-400 py-8"
+             >
+               <p className="text-lg">No tienes cargas publicadas.</p>
+               <Button
+                 variant="outline"
+                 className="mt-4 border-blue-300 text-blue-700"
+                 onClick={() => setActiveTab('publish')}
+               >
+                 Publicar tu primera carga
+               </Button>
+             </motion.div>
+            ) : (
+             <motion.div
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               exit={{ opacity: 0 }}
+               className="overflow-x-auto"
+             >
+               <Table>
+                 <TableHeader>
+                   <TableRow>
+                     <TableHead>Origen</TableHead>
+                     <TableHead>Destino</TableHead>
+                     <TableHead>Tipo</TableHead>
+                     <TableHead>Peso</TableHead>
+                     <TableHead>Dimensiones</TableHead>
+                     <TableHead>Presupuesto (Q)</TableHead>
+                     <TableHead>Estado</TableHead>
+                     <TableHead>Ofertas</TableHead>
+                     <TableHead>Acciones</TableHead>
+                   </TableRow>
+                 </TableHeader>
+                 <TableBody>
+                   {filteredCargo.map((cargo, idx) => (
+                     <MotionTableRow
+                       key={cargo.id}
+                       initial={{ opacity: 0, y: 20 }}
+                       animate={{ opacity: 1, y: 0 }}
+                       transition={{ delay: idx * 0.05 }}
+                       className="hover:bg-blue-50 transition-all"
+                     >
+                       <TableCell>{cargo.origin}</TableCell>
+                       <TableCell>{cargo.destination}</TableCell>
+                       <TableCell>{cargo.cargoType}</TableCell>
+                       <TableCell>{cargo.weight}</TableCell>
+                       <TableCell>{cargo.dimensions}</TableCell>
+                       <TableCell>{cargo.budget}</TableCell>
+                       <TableCell>
+                         <Badge className={getStatusBadge(cargo.status)}>{cargo.status}</Badge>
+                       </TableCell>
+                       <TableCell>{cargo.offers}</TableCell>
+                       <TableCell>
+                         <Button size="sm" variant="outline" onClick={() => setSelectedCargo(cargo)}>
+                           Ver Detalles
+                         </Button>
+                       </TableCell>
+                     </MotionTableRow>
+                   ))}
+                 </TableBody>
+               </Table>
+             </motion.div>
+            )}
+         </AnimatePresence>
+        </CardContent>
+      </Card>
     </div>
   );
 }

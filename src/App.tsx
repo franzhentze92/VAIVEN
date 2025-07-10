@@ -13,6 +13,7 @@ import Contact from "./pages/Contact";
 import ClientDashboard from "./pages/ClientDashboard";
 import TransporterDashboard from "./pages/TransporterDashboard";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
 import HowItWorks from "./pages/HowItWorks";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/client-dashboard" element={<ClientDashboard />} />
               <Route path="/transporter-dashboard" element={<TransporterDashboard />} />

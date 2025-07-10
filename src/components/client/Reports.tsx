@@ -189,7 +189,7 @@ export default function Reports() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">Analytics & Reportes</h1>
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">Reportes</h1>
         <p className="text-blue-600">Análisis completo de tu actividad logística y métricas de rendimiento</p>
       </div>
 

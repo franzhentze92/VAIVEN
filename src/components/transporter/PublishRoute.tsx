@@ -59,22 +59,22 @@ export default function PublishRoute() {
   };
 
   const vehicleTypes = [
-    { value: 'furgoneta', label: 'Furgoneta', capacity: 'Hasta 1,500 kg', icon: Truck, price: '€200-400' },
-    { value: 'camion-rigido', label: 'Camión Rígido', capacity: 'Hasta 7,500 kg', icon: Truck, price: '€400-800' },
-    { value: 'trailer', label: 'Tráiler', capacity: 'Hasta 24,000 kg', icon: Truck, price: '€800-1,500' },
-    { value: 'mega-trailer', label: 'Mega Tráiler', capacity: 'Hasta 40,000 kg', icon: Truck, price: '€1,200-2,500' },
+    { value: 'furgoneta', label: 'Furgoneta', capacity: 'Hasta 1,500 kg', icon: Truck, price: 'Q1,500-3,000' },
+    { value: 'camion-rigido', label: 'Camión Rígido', capacity: 'Hasta 7,500 kg', icon: Truck, price: 'Q3,000-6,000' },
+    { value: 'trailer', label: 'Tráiler', capacity: 'Hasta 24,000 kg', icon: Truck, price: 'Q6,000-12,000' },
+    { value: 'mega-trailer', label: 'Mega Tráiler', capacity: 'Hasta 40,000 kg', icon: Truck, price: 'Q10,000-20,000' },
   ];
 
   const recentRoutes = [
-    { id: '1', origin: 'Madrid', destination: 'Barcelona', date: '2024-01-15', status: 'active', price: '€450', bookings: 3 },
-    { id: '2', origin: 'Valencia', destination: 'Sevilla', date: '2024-01-18', status: 'completed', price: '€380', bookings: 1 },
-    { id: '3', origin: 'Bilbao', destination: 'Zaragoza', date: '2024-01-20', status: 'active', price: '€320', bookings: 2 },
+    { id: '1', origin: 'Ciudad de Guatemala', destination: 'Quetzaltenango', date: '2024-01-15', status: 'active', price: 'Q2,500', bookings: 3 },
+    { id: '2', origin: 'Escuintla', destination: 'Retalhuleu', date: '2024-01-18', status: 'completed', price: 'Q1,800', bookings: 1 },
+    { id: '3', origin: 'Cobán', destination: 'Puerto Barrios', date: '2024-01-20', status: 'active', price: 'Q3,200', bookings: 2 },
   ];
 
   const marketInsights = [
-    { route: 'Madrid → Barcelona', avgPrice: '€420', demand: 'Alta', trend: 'up' },
-    { route: 'Valencia → Sevilla', avgPrice: '€380', demand: 'Media', trend: 'stable' },
-    { route: 'Bilbao → Zaragoza', avgPrice: '€310', demand: 'Baja', trend: 'down' },
+    { route: 'Ciudad de Guatemala → Quetzaltenango', avgPrice: 'Q2,400', demand: 'Alta', trend: 'up' },
+    { route: 'Escuintla → Retalhuleu', avgPrice: 'Q1,700', demand: 'Media', trend: 'stable' },
+    { route: 'Cobán → Puerto Barrios', avgPrice: 'Q3,000', demand: 'Baja', trend: 'down' },
   ];
 
   const calculateFormProgress = () => {
@@ -156,7 +156,7 @@ export default function PublishRoute() {
                           id="origin"
                           value={formData.origin}
                           onChange={(e) => setFormData({...formData, origin: e.target.value})}
-                          placeholder="ej. Madrid"
+                          placeholder="ej. Ciudad de Guatemala"
                           className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                         />
                       </div>
@@ -169,7 +169,7 @@ export default function PublishRoute() {
                           id="destination"
                           value={formData.destination}
                           onChange={(e) => setFormData({...formData, destination: e.target.value})}
-                          placeholder="ej. Barcelona"
+                          placeholder="ej. Quetzaltenango"
                           className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                         />
                       </div>
@@ -250,7 +250,7 @@ export default function PublishRoute() {
                       <div className="space-y-2">
                         <Label htmlFor="price" className="text-gray-700 font-medium">
                           <Euro className="inline h-4 w-4 mr-1 text-blue-500" />
-                          Precio (€)
+                          Precio (Q)
                         </Label>
                         <Input
                           id="price"
@@ -408,7 +408,7 @@ export default function PublishRoute() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Ingresos del Mes</span>
-                <Badge variant="secondary" className="bg-purple-100 text-purple-800">€2,450</Badge>
+                <Badge variant="secondary" className="bg-purple-100 text-purple-800">Q2,450</Badge>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Calificación</span>

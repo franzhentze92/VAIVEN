@@ -36,10 +36,10 @@ const HeroSection: React.FC = () => {
             </div>
             
             <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold text-slate-800 mb-6 leading-tight">
-              Conectamos
+              La Red Líder de Logística y Transporte en
               <br />
               <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Carga y Transporte
+                Guatemala
               </span>
             </h1>
             

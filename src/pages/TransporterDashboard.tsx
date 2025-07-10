@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 
@@ -15,6 +16,7 @@ import TransporterProfile from '@/components/transporter/TransporterProfile';
 export default function TransporterDashboard() {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
+  const navigate = useNavigate();
 
   const renderContent = () => {
     switch (activeTab) {
@@ -51,7 +53,7 @@ export default function TransporterDashboard() {
               </div>
               <Button 
                 variant="outline" 
-                onClick={logout} 
+                onClick={() => { logout(); navigate('/'); }} 
                 className="bg-white text-blue-600 hover:bg-blue-50 border-white flex items-center space-x-2"
               >
                 <LogOut className="h-4 w-4" />

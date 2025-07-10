@@ -47,17 +47,17 @@ export default function ManageOffers() {
       id: 'O001',
       type: 'sent',
       cargo: 'Electrodomésticos',
-      origin: 'Madrid',
-      destination: 'Barcelona',
+      origin: 'Ciudad de Guatemala',
+      destination: 'Quetzaltenango',
       price: 650,
       proposedPrice: 620,
       status: 'pending',
       client: {
-        name: 'TechCorp Solutions',
+        name: 'Distribuidora Maya',
         rating: 4.9,
         completedDeliveries: 45,
-        phone: '+34 600 123 456',
-        email: 'logistics@techcorp.com'
+        phone: '+502 1234-5678',
+        email: 'contacto@distribuidoramaya.com'
       },
       date: '2024-01-15',
       deadline: '2024-01-20',
@@ -66,7 +66,7 @@ export default function ManageOffers() {
       vehicleType: 'Camión Rígido',
       description: 'Lavadoras y refrigeradores para tienda',
       urgency: 'normal',
-      distance: '625 km',
+      distance: '225 km',
       estimatedTime: '6-8 horas',
       insurance: true,
       temperatureControl: false,
@@ -76,17 +76,17 @@ export default function ManageOffers() {
       id: 'O002',
       type: 'received',
       cargo: 'Material de Construcción',
-      origin: 'Sevilla',
-      destination: 'Valencia',
+      origin: 'Escuintla',
+      destination: 'Retalhuleu',
       price: 480,
       proposedPrice: 520,
       status: 'accepted',
       client: {
-        name: 'ConstructPro',
+        name: 'Constructora Nacional',
         rating: 4.7,
         completedDeliveries: 23,
-        phone: '+34 600 789 012',
-        email: 'shipping@constructpro.es'
+        phone: '+502 2345-6789',
+        email: 'envios@constructora.com.gt'
       },
       date: '2024-01-14',
       deadline: '2024-01-22',
@@ -95,7 +95,7 @@ export default function ManageOffers() {
       vehicleType: 'Tráiler',
       description: 'Cemento y materiales varios',
       urgency: 'high',
-      distance: '450 km',
+      distance: '180 km',
       estimatedTime: '5-6 horas',
       insurance: false,
       temperatureControl: false,
@@ -105,17 +105,17 @@ export default function ManageOffers() {
       id: 'O003',
       type: 'sent',
       cargo: 'Productos Textiles',
-      origin: 'Bilbao',
-      destination: 'Zaragoza',
+      origin: 'Chimaltenango',
+      destination: 'Sacatepéquez',
       price: 420,
       proposedPrice: 400,
       status: 'rejected',
       client: {
-        name: 'Fashion Express',
+        name: 'Textiles Centroamericanos',
         rating: 4.8,
         completedDeliveries: 67,
-        phone: '+34 600 345 678',
-        email: 'logistics@fashion-express.com'
+        phone: '+502 3456-7890',
+        email: 'logistica@textilesca.com.gt'
       },
       date: '2024-01-13',
       deadline: '2024-01-25',
@@ -124,8 +124,8 @@ export default function ManageOffers() {
       vehicleType: 'Furgoneta',
       description: 'Ropa y accesorios de temporada',
       urgency: 'normal',
-      distance: '320 km',
-      estimatedTime: '4-5 horas',
+      distance: '40 km',
+      estimatedTime: '1-2 horas',
       insurance: true,
       temperatureControl: false,
       message: 'Precio reducido por volumen y frecuencia de trabajo.'
@@ -134,17 +134,17 @@ export default function ManageOffers() {
       id: 'O004',
       type: 'received',
       cargo: 'Equipos Informáticos',
-      origin: 'Valencia',
-      destination: 'Madrid',
+      origin: 'Cobán',
+      destination: 'Puerto Barrios',
       price: 380,
       proposedPrice: 410,
       status: 'negotiating',
       client: {
-        name: 'IT Solutions Pro',
+        name: 'IT Solutions GT',
         rating: 4.6,
         completedDeliveries: 34,
-        phone: '+34 600 901 234',
-        email: 'shipping@itsolutions.es'
+        phone: '+502 4567-8901',
+        email: 'info@itsolutions.com.gt'
       },
       date: '2024-01-12',
       deadline: '2024-01-18',
@@ -153,7 +153,7 @@ export default function ManageOffers() {
       vehicleType: 'Camión Rígido',
       description: 'Ordenadores y servidores',
       urgency: 'high',
-      distance: '355 km',
+      distance: '320 km',
       estimatedTime: '4-5 horas',
       insurance: true,
       temperatureControl: true,
@@ -163,17 +163,17 @@ export default function ManageOffers() {
       id: 'O005',
       type: 'sent',
       cargo: 'Productos Alimentarios',
-      origin: 'Alicante',
-      destination: 'Murcia',
+      origin: 'Petén',
+      destination: 'Alta Verapaz',
       price: 720,
       proposedPrice: 680,
       status: 'pending',
       client: {
-        name: 'FreshFood Express',
+        name: 'Alimentos del Norte',
         rating: 4.5,
         completedDeliveries: 89,
-        phone: '+34 600 567 890',
-        email: 'logistics@freshfood.com'
+        phone: '+502 5678-9012',
+        email: 'contacto@alimentosnorte.com.gt'
       },
       date: '2024-01-11',
       deadline: '2024-01-19',
@@ -182,8 +182,8 @@ export default function ManageOffers() {
       vehicleType: 'Camión Refrigerado',
       description: 'Productos frescos y congelados',
       urgency: 'normal',
-      distance: '75 km',
-      estimatedTime: '1-2 horas',
+      distance: '150 km',
+      estimatedTime: '2-3 horas',
       insurance: true,
       temperatureControl: true,
       message: 'Ofrezco descuento por la corta distancia y disponibilidad inmediata.'
@@ -368,7 +368,7 @@ export default function ManageOffers() {
           </div>
           
           <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-700">Rango de Precio: €{priceRange[0]} - €{priceRange[1]}</Label>
+            <Label className="text-sm font-medium text-gray-700">Rango de Precio: Q{priceRange[0]} - Q{priceRange[1]}</Label>
             <div className="flex space-x-4">
               <Input
                 type="number"
@@ -454,16 +454,16 @@ export default function ManageOffers() {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600">Precio original:</span>
-                        <span className="text-sm font-medium line-through text-gray-500">€{offer.price}</span>
+                        <span className="text-sm font-medium line-through text-gray-500">Q{offer.price}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600">Precio propuesto:</span>
-                        <span className="text-lg font-bold text-[blue-500]">€{offer.proposedPrice}</span>
+                        <span className="text-lg font-bold text-[blue-500]">Q{offer.proposedPrice}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600">Diferencia:</span>
                         <span className={`text-sm font-medium ${offer.proposedPrice > offer.price ? 'text-red-600' : 'text-blue-600'}`}>
-                          {offer.proposedPrice > offer.price ? '+' : ''}€{offer.proposedPrice - offer.price}
+                          {offer.proposedPrice > offer.price ? '+' : ''}Q{offer.proposedPrice - offer.price}
                         </span>
                       </div>
                     </div>

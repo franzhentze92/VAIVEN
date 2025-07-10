@@ -89,7 +89,7 @@ export default function TransporterDashboardContent({ activeTab }: TransporterDa
     },
     { 
       title: 'Ingresos del Mes', 
-      value: '€2,450', 
+      value: 'Q2,450', 
       change: '+12%', 
       changeType: 'positive',
       icon: Euro, 
@@ -117,7 +117,7 @@ export default function TransporterDashboardContent({ activeTab }: TransporterDa
     { 
       id: '001', 
       type: 'Carga asignada', 
-      description: 'Madrid → Barcelona', 
+      description: 'Ciudad de Guatemala → Quetzaltenango', 
       time: '2 horas', 
       status: 'nuevo',
       icon: Package,
@@ -128,7 +128,7 @@ export default function TransporterDashboardContent({ activeTab }: TransporterDa
     { 
       id: '002', 
       type: 'Entrega completada', 
-      description: 'Sevilla → Valencia', 
+      description: 'Escuintla → Retalhuleu', 
       time: '1 día', 
       status: 'completado',
       icon: CheckCircle,
@@ -139,7 +139,7 @@ export default function TransporterDashboardContent({ activeTab }: TransporterDa
     { 
       id: '003', 
       type: 'Nueva oferta', 
-      description: 'Bilbao → Zaragoza', 
+      description: 'Cobán → Puerto Barrios', 
       time: '3 horas', 
       status: 'pendiente',
       icon: AlertCircle,
@@ -150,7 +150,7 @@ export default function TransporterDashboardContent({ activeTab }: TransporterDa
     { 
       id: '004', 
       type: 'Ruta publicada', 
-      description: 'Valencia → Alicante', 
+      description: 'Petén → Alta Verapaz', 
       time: '5 horas', 
       status: 'activo',
       icon: Route,
@@ -164,38 +164,38 @@ export default function TransporterDashboardContent({ activeTab }: TransporterDa
     {
       id: '001',
       cargo: 'Carga #001',
-      route: 'Madrid → Barcelona',
+      route: 'Ciudad de Guatemala → Quetzaltenango',
       time: 'Mañana 14:30',
       status: 'Programada',
       progress: 75,
       weight: '500 kg',
-      price: '€1,250',
+      price: 'Q1,250',
       priority: 'high',
-      client: 'TechCorp Solutions'
+      client: 'Distribuidora Maya'
     },
     {
       id: '002',
       cargo: 'Carga #002',
-      route: 'Valencia → Alicante',
+      route: 'Escuintla → Retalhuleu',
       time: '17 Ene 10:00',
       status: 'En preparación',
       progress: 25,
       weight: '300 kg',
-      price: '€750',
+      price: 'Q750',
       priority: 'normal',
-      client: 'FreshFood Express'
+      client: 'Alimentos del Norte'
     },
     {
       id: '003',
       cargo: 'Carga #003',
-      route: 'Bilbao → Zaragoza',
+      route: 'Cobán → Puerto Barrios',
       time: '18 Ene 16:00',
       status: 'Confirmada',
       progress: 10,
       weight: '800 kg',
-      price: '€1,100',
+      price: 'Q1,100',
       priority: 'medium',
-      client: 'Industrial Parts Co.'
+      client: 'IT Solutions GT'
     }
   ];
 

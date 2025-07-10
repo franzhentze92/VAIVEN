@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 
@@ -17,6 +18,7 @@ import Reports from '@/components/client/Reports';
 export default function ClientDashboard() {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
+  const navigate = useNavigate();
 
   const renderContent = () => {
     switch (activeTab) {
@@ -57,7 +59,7 @@ export default function ClientDashboard() {
               </div>
               <Button 
                 variant="outline" 
-                onClick={logout} 
+                onClick={() => { logout(); navigate('/'); }} 
                 className="border-2 border-blue-100 bg-white text-blue-600 hover:bg-blue-50 hover:text-blue-700 flex items-center space-x-2 font-semibold shadow-md"
               >
                 <LogOut className="h-4 w-4" />

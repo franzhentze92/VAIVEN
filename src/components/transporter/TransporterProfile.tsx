@@ -13,10 +13,10 @@ export default function TransporterProfile() {
   const [profileData, setProfileData] = useState({
     name: 'Juan Pérez',
     email: 'juan.perez@email.com',
-    phone: '+34 600 123 456',
-    company: 'Transportes Pérez S.L.',
-    address: 'Calle Mayor 123, Madrid',
-    description: 'Transportista profesional con más de 10 años de experiencia'
+    phone: '+502 1234-5678',
+    company: 'Transportes Pérez Guatemala',
+    address: 'Avenida Reforma 10-50, Zona 9, Ciudad de Guatemala',
+    description: 'Transportista profesional en Guatemala con más de 10 años de experiencia'
   });
 
   const [vehicleData, setVehicleData] = useState({
@@ -33,7 +33,7 @@ export default function TransporterProfile() {
     totalDeliveries: 156,
     rating: 4.8,
     completionRate: 98,
-    totalEarnings: '€45,230'
+    totalEarnings: 'Q45,230'
   };
 
   const certifications = [

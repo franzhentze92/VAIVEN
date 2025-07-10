@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, isAuthenticated, logout, loginAsClient, loginAsTransporter } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -14,14 +14,13 @@ export default function Header() {
   const isDashboard = location.pathname.includes('dashboard');
   if (isDashboard) return null;
 
-  const handleClientLogin = () => {
-    loginAsClient();
-    navigate('/client-dashboard');
-  };
-
-  const handleTransporterLogin = () => {
-    loginAsTransporter();
-    navigate('/transporter-dashboard');
+  const handleDashboardClick = (type: 'client' | 'transporter') => {
+    if (!isAuthenticated) {
+      navigate(`/login?redirect=${type}-dashboard`);
+    } else {
+      if (type === 'client') navigate('/client-dashboard');
+      else navigate('/transporter-dashboard');
+    }
   };
 
   const navigationItems = [
@@ -60,13 +59,7 @@ export default function Header() {
                 <Button
                   variant="outline"
                   className="bg-white text-purple-600 hover:bg-purple-50 border-white"
-                  onClick={() => {
-                    if (user?.userType === 'client') {
-                      navigate('/client-dashboard');
-                    } else if (user?.userType === 'transporter') {
-                      navigate('/transporter-dashboard');
-                    }
-                  }}
+                  onClick={() => handleDashboardClick(user?.userType === 'client' ? 'client' : 'transporter')}
                 >
                   Mi Panel
                 </Button>
@@ -82,14 +75,14 @@ export default function Header() {
               <div className="flex items-center space-x-2">
                 <Button 
                   className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white"
-                  onClick={handleClientLogin}
+                  onClick={() => handleDashboardClick('client')}
                 >
                   <User className="h-4 w-4 mr-2" />
                   Panel Cliente
                 </Button>
                 <Button 
                   className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white"
-                  onClick={handleTransporterLogin}
+                  onClick={() => handleDashboardClick('transporter')}
                 >
                   <Truck className="h-4 w-4 mr-2" />
                   Panel Transportista
@@ -129,7 +122,7 @@ export default function Header() {
                 <Button
                   className="w-full bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white"
                   onClick={() => {
-                    handleClientLogin();
+                    handleDashboardClick('client');
                     setIsMenuOpen(false);
                   }}
                 >
@@ -139,7 +132,7 @@ export default function Header() {
                 <Button
                   className="w-full bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white"
                   onClick={() => {
-                    handleTransporterLogin();
+                    handleDashboardClick('transporter');
                     setIsMenuOpen(false);
                   }}
                 >

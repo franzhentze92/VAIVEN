@@ -102,12 +102,8 @@ const Home: React.FC = () => {
                 Plataforma líder en logística de Guatemala
               </div>
               
-              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold text-slate-800 mb-6 leading-tight">
-                Conectamos
-                <br />
-                <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Carga y Transporte
-                </span>
+              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-800 mb-6 leading-tight">
+                Optimiza tu Logística en <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">Guatemala</span>
               </h1>
               
               <p className="text-xl text-slate-600 mb-8 max-w-2xl leading-relaxed">
