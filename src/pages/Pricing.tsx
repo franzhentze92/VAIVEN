@@ -86,7 +86,7 @@ const Pricing: React.FC = () => {
         <div className="container mx-auto px-4 text-center relative z-10">
           <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 px-6 py-3 rounded-full text-sm font-semibold mb-8 shadow-lg border border-blue-200">
             <Sparkles className="h-4 w-4 mr-2 text-blue-600" />
-            Precios de CargoConnect
+            Precios de VAIVEN
           </div>
           <h1 className="text-4xl md:text-6xl font-bold mb-6 text-slate-800">
             Precios Transparentes

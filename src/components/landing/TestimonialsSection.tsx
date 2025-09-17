@@ -8,7 +8,7 @@ const TestimonialsSection: React.FC = () => {
       name: "Carlos Mendoza",
       role: "Transportista",
       company: "Transportes del Norte",
-      content: "CargoConnect me ha permitido optimizar mis rutas y reducir los viajes vacíos en un 70%. Ahora tengo carga tanto de ida como de vuelta.",
+      content: "VAIVEN me ha permitido optimizar mis rutas y reducir los viajes vacíos en un 70%. Ahora tengo carga tanto de ida como de vuelta.",
       rating: 5,
       avatar: "CM"
     },

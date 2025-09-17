@@ -12,10 +12,10 @@ export default function ClientDashboardContent() {
   const navigate = useNavigate();
 
   const stats = [
-    { title: 'Cargas Activas', value: '3', icon: Package, color: 'from-blue-600 to-indigo-600' },
-    { title: 'En Tránsito', value: '2', icon: Truck, color: 'from-cyan-500 to-blue-600' },
-    { title: 'Pendientes', value: '1', icon: Clock, color: 'from-yellow-400 to-yellow-600' },
-    { title: 'Completadas', value: '15', icon: CheckCircle, color: 'from-green-500 to-teal-500' },
+    { title: 'Cargas Activas', value: '3', icon: Package, color: 'bg-primary/10 text-primary' },
+    { title: 'En Tránsito', value: '2', icon: Truck, color: 'bg-accent/10 text-accent' },
+    { title: 'Pendientes', value: '1', icon: Clock, color: 'bg-yellow-500/10 text-yellow-600' },
+    { title: 'Completadas', value: '15', icon: CheckCircle, color: 'bg-green-500/10 text-green-600' },
   ];
 
   const recentShipments = [
@@ -44,20 +44,22 @@ export default function ClientDashboardContent() {
 
   return (
     <div className="space-y-8">
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-1">Hola, {user?.name || 'Cliente'} 👋</h1>
-          <p className="text-blue-600">Este es tu panel principal. Aquí puedes ver el resumen de tus envíos y actividad en Guatemala.</p>
+          <h1 className="text-3xl font-bold text-neutral-900 mb-1">Hola, {user?.name || 'Cliente'} 👋</h1>
+          <p className="text-neutral-500">Este es tu panel principal. Aquí puedes ver el resumen de tus envíos y actividad en Guatemala.</p>
         </div>
         <Button
-          className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-lg hover:from-blue-700 hover:to-indigo-700"
+          className="flex items-center gap-2 bg-primary hover:bg-primary/90 transition-colors"
           onClick={() => navigate('/client-dashboard?tab=publish')}
         >
           <PlusCircle className="h-5 w-5" /> Publicar Nueva Carga
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, idx) => {
           const Icon = stat.icon;
           return (
@@ -67,15 +69,17 @@ export default function ClientDashboardContent() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.08 }}
             >
-              <Card className="group border-0 bg-white/80 backdrop-blur-sm hover:bg-white/90 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <div className={`p-3 rounded-xl bg-gradient-to-r ${stat.color} shadow-lg`}>
-                    <Icon className="h-6 w-6 text-white" />
+              <Card className="group border-0 bg-white shadow-lg hover:shadow-xl transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-2xl font-bold text-neutral-900">{stat.value}</p>
+                      <p className="text-sm text-neutral-500">{stat.title}</p>
+                    </div>
+                    <div className={`p-3 rounded-lg ${stat.color}`}>
+                      <Icon className="h-6 w-6" />
+                    </div>
                   </div>
-                  <CardTitle className="text-base font-semibold text-slate-800 group-hover:text-blue-600 transition-colors duration-300">{stat.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-blue-900">{stat.value}</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -83,17 +87,18 @@ export default function ClientDashboardContent() {
         })}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card className="border-0 bg-white/80 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500">
+      {/* Charts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="border-0 bg-white shadow-lg hover:shadow-xl transition-shadow">
           <CardHeader>
-            <CardTitle className="text-xl font-bold text-blue-900">Envíos por Mes</CardTitle>
+            <CardTitle className="text-xl font-bold text-neutral-900">Envíos por Mes</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={monthlyShipments} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis allowDecimals={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="month" stroke="#666" />
+                <YAxis allowDecimals={false} stroke="#666" />
                 <Tooltip />
                 <Legend />
                 <Line type="monotone" dataKey="envios" stroke="#3B82F6" strokeWidth={3} dot={{ r: 5 }} name="Envíos" />
@@ -101,9 +106,9 @@ export default function ClientDashboardContent() {
             </ResponsiveContainer>
           </CardContent>
         </Card>
-        <Card className="border-0 bg-white/80 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500">
+        <Card className="border-0 bg-white shadow-lg hover:shadow-xl transition-shadow">
           <CardHeader>
-            <CardTitle className="text-xl font-bold text-blue-900">Tipos de Carga</CardTitle>
+            <CardTitle className="text-xl font-bold text-neutral-900">Tipos de Carga</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={220}>
@@ -121,9 +126,10 @@ export default function ClientDashboardContent() {
         </Card>
       </div>
 
-      <Card className="border-0 bg-white/80 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500">
+      {/* Recent Shipments */}
+      <Card className="border-0 bg-white shadow-lg hover:shadow-xl transition-shadow">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Envíos Recientes</CardTitle>
+          <CardTitle className="text-2xl font-bold text-neutral-900">Envíos Recientes</CardTitle>
         </CardHeader>
         <CardContent>
           <AnimatePresence>
@@ -133,12 +139,12 @@ export default function ClientDashboardContent() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="text-center text-blue-400 py-8"
+                className="text-center text-neutral-400 py-8"
               >
                 <p className="text-lg">No tienes envíos recientes.</p>
                 <Button
                   variant="outline"
-                  className="mt-4 border-blue-300 text-blue-700"
+                  className="mt-4 border-primary text-primary hover:bg-primary hover:text-white transition-colors"
                   onClick={() => navigate('/client-dashboard?tab=publish')}
                 >
                   <PlusCircle className="h-4 w-4 mr-2" /> Publicar tu primer envío
@@ -152,11 +158,11 @@ export default function ClientDashboardContent() {
                     initial={{ opacity: 0, x: 40 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.07 }}
-                    className="flex items-center justify-between p-4 border border-blue-200 rounded-xl bg-white/60 shadow-sm hover:shadow-md transition-all"
+                    className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
                   >
                     <div>
-                      <p className="font-semibold text-blue-900">#{shipment.id}</p>
-                      <p className="text-sm text-blue-600">{shipment.origin} → {shipment.destination}</p>
+                      <p className="font-semibold text-neutral-900">#{shipment.id}</p>
+                      <p className="text-sm text-neutral-600">{shipment.origin} → {shipment.destination}</p>
                     </div>
                     <div className="text-right">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold shadow-sm transition-colors duration-300 ${
@@ -166,7 +172,7 @@ export default function ClientDashboardContent() {
                       }`}>
                         {shipment.status}
                       </span>
-                      <p className="text-sm text-blue-500 mt-1">{shipment.date}</p>
+                      <p className="text-sm text-neutral-500 mt-1">{shipment.date}</p>
                     </div>
                   </motion.div>
                 ))}

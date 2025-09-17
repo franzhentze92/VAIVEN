@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,13 +9,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
-import { Progress } from '@/components/ui/progress';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 import { 
   Calendar, 
   MapPin, 
   Truck, 
   Package, 
-  Euro, 
+  Coins, 
   Route,
   Clock,
   AlertCircle,
@@ -30,15 +33,22 @@ import {
   Shield,
   Thermometer,
   Repeat,
-  CalendarDays
+  CalendarDays,
+  ArrowLeft
 } from 'lucide-react';
 
 export default function PublishRoute() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const formRef = useRef<HTMLFormElement | null>(null);
   const [formData, setFormData] = useState({
     origin: '',
     destination: '',
     departureDate: '',
+    arrivalDate: '',
     vehicleType: '',
+    vehicleId: '',
     maxWeight: '',
     maxVolume: '',
     price: '',
@@ -49,20 +59,83 @@ export default function PublishRoute() {
     insurance: false,
     temperatureControl: false
   });
+  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [editingRoute, setEditingRoute] = useState<any>(null);
+  const [vehiclesLoading, setVehiclesLoading] = useState(false);
 
   const [activeTab, setActiveTab] = useState('basic');
-  const [formProgress, setFormProgress] = useState(25);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Route published:', formData);
+  // Helper function to translate vehicle types to Spanish
+  const translateVehicleType = (vehicleType: string): string => {
+    const vehicleTypeMap: { [key: string]: string } = {
+      'small_truck': 'Camión Pequeño',
+      'medium_truck': 'Camión Mediano',
+      'large_truck': 'Camión Grande',
+      'trailer': 'Tráiler',
+      'pickup': 'Camioneta',
+      'van': 'Furgoneta',
+      'motorcycle': 'Motocicleta'
+    };
+    return vehicleTypeMap[vehicleType.toLowerCase()] || vehicleType;
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user?.id) {
+      toast({ title: 'Debes iniciar sesión', variant: 'destructive' });
+      return;
+    }
+    try {
+      setIsSubmitting(true);
+      const chosen = vehicles.find(v => String(v.id) === String(formData.vehicleId)) || null;
+      const payload = {
+        user_id: user.id,
+        origin: formData.origin.trim(),
+        destination: formData.destination.trim(),
+        departure_date: formData.departureDate || null,
+        arrival_date: formData.arrivalDate || null,
+        vehicle_type: chosen?.vehicle_type || formData.vehicleType,
+        vehicle_id: chosen ? chosen.id : null,
+        max_weight_kg: formData.maxWeight ? Number(formData.maxWeight) : null,
+        max_volume_m3: formData.maxVolume ? Number(formData.maxVolume) : null,
+        price_q: formData.price ? Number(formData.price) : null,
+        description: formData.description || null,
+        is_recurring: formData.isRecurring,
+        frequency: formData.frequency || null,
+        special_requirements: formData.specialRequirements || null,
+        insurance: formData.insurance,
+        temperature_control: formData.temperatureControl,
+      };
+      let error;
+      if (editingRoute?.id) {
+        ({ error } = await supabase
+          .from('transporter_routes')
+          .update(payload)
+          .eq('id', editingRoute.id));
+      } else {
+        ({ error } = await supabase.from('transporter_routes').insert(payload));
+      }
+      if (error) throw error;
+      toast({ title: 'Ruta publicada', description: 'Tu ruta ha sido publicada exitosamente.' });
+      navigate('/transporter-dashboard?tab=my-routes');
+    } catch (err) {
+      toast({ title: 'Error al publicar', description: err instanceof Error ? err.message : 'Error desconocido', variant: 'destructive' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Values aligned with DB check constraint
   const vehicleTypes = [
-    { value: 'furgoneta', label: 'Furgoneta', capacity: 'Hasta 1,500 kg', icon: Truck, price: 'Q1,500-3,000' },
-    { value: 'camion-rigido', label: 'Camión Rígido', capacity: 'Hasta 7,500 kg', icon: Truck, price: 'Q3,000-6,000' },
+    { value: 'pickup', label: 'Pickup', capacity: 'Hasta 800 kg', icon: Truck, price: 'Q800-1,500' },
+    { value: 'van', label: 'Van', capacity: 'Hasta 1,500 kg', icon: Truck, price: 'Q1,200-2,400' },
+    { value: 'small_truck', label: 'Camión Pequeño', capacity: 'Hasta 5,000 kg', icon: Truck, price: 'Q2,000-4,000' },
+    { value: 'medium_truck', label: 'Camión Mediano', capacity: 'Hasta 10,000 kg', icon: Truck, price: 'Q3,500-6,500' },
+    { value: 'large_truck', label: 'Camión Grande', capacity: 'Hasta 20,000 kg', icon: Truck, price: 'Q5,000-9,000' },
     { value: 'trailer', label: 'Tráiler', capacity: 'Hasta 24,000 kg', icon: Truck, price: 'Q6,000-12,000' },
-    { value: 'mega-trailer', label: 'Mega Tráiler', capacity: 'Hasta 40,000 kg', icon: Truck, price: 'Q10,000-20,000' },
+    { value: 'flatbed', label: 'Plataforma', capacity: 'Hasta 24,000 kg', icon: Truck, price: 'Q6,000-12,000' },
+    { value: 'reefer', label: 'Refrigerado', capacity: 'Hasta 20,000 kg', icon: Truck, price: 'Q7,000-14,000' },
   ];
 
   const recentRoutes = [
@@ -77,25 +150,70 @@ export default function PublishRoute() {
     { route: 'Cobán → Puerto Barrios', avgPrice: 'Q3,000', demand: 'Baja', trend: 'down' },
   ];
 
-  const calculateFormProgress = () => {
-    let progress = 0;
-    if (formData.origin) progress += 20;
-    if (formData.destination) progress += 20;
-    if (formData.departureDate) progress += 15;
-    if (formData.vehicleType) progress += 15;
-    if (formData.maxWeight) progress += 10;
-    if (formData.price) progress += 10;
-    if (formData.description) progress += 10;
-    return progress;
-  };
+  // no progress bar
 
-  // Update progress when form data changes
-  useState(() => {
-    setFormProgress(calculateFormProgress());
-  });
+  const isValid = useMemo(() => !!(formData.origin && formData.destination && formData.departureDate && formData.arrivalDate && formData.vehicleId), [formData]);
+
+  useEffect(() => {
+    const loadVehicles = async () => {
+      if (!user?.id) return;
+      try {
+        setVehiclesLoading(true);
+        const { data, error } = await supabase
+          .from('transporter_vehicles')
+          .select('id, name, plate, vehicle_type')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        setVehicles(data || []);
+      } catch {
+        setVehicles([]);
+      } finally {
+        setVehiclesLoading(false);
+      }
+    };
+    loadVehicles();
+  }, [user?.id]);
+
+  // If there's an edit param, load the route and prefill
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const editId = params.get('edit');
+    const loadRoute = async () => {
+      if (!editId) return;
+      const { data, error } = await supabase
+        .from('transporter_routes')
+        .select('*')
+        .eq('id', editId)
+        .single();
+      if (!error && data) {
+        setEditingRoute(data);
+        setFormData(prev => ({
+          ...prev,
+          origin: data.origin || '',
+          destination: data.destination || '',
+          departureDate: data.departure_date || '',
+          arrivalDate: data.arrival_date || '',
+          vehicleType: data.vehicle_type || '',
+          vehicleId: data.vehicle_id || '',
+          maxWeight: data.max_weight_kg ? String(data.max_weight_kg) : '',
+          maxVolume: data.max_volume_m3 ? String(data.max_volume_m3) : '',
+          price: data.price_q ? String(data.price_q) : '',
+          description: data.description || '',
+          isRecurring: !!data.is_recurring,
+          frequency: data.frequency || '',
+          specialRequirements: data.special_requirements || '',
+          insurance: !!data.insurance,
+          temperatureControl: !!data.temperature_control,
+        }));
+      }
+    };
+    loadRoute();
+  }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-neutral-50">
+      <div className="container mx-auto max-w-5xl px-4 py-8 space-y-6">
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
@@ -103,31 +221,20 @@ export default function PublishRoute() {
           <p className="text-gray-600 mt-1">Comparte tu ruta disponible para cargas</p>
         </div>
         <div className="flex space-x-3">
-          <Button variant="outline" className="border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white">
-            <Eye className="h-4 w-4 mr-2" />
-            Vista Previa
+          <Button variant="outline" onClick={() => navigate('/transporter-dashboard?tab=my-routes')}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Volver a Mis Rutas
           </Button>
-          <Button className="bg-blue-500 hover:bg-blue-600">
+          <Button onClick={() => formRef.current?.requestSubmit()} disabled={!isValid || isSubmitting} className="bg-blue-500 hover:bg-blue-600">
             <Save className="h-4 w-4 mr-2" />
-            Guardar Borrador
+            {isSubmitting ? 'Guardando...' : 'Guardar Ruta'}
           </Button>
         </div>
       </div>
 
-      {/* Progress Bar */}
-      <Card className="border-gray-200">
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">Progreso del formulario</span>
-            <span className="text-sm text-gray-500">{formProgress}%</span>
-          </div>
-          <Progress value={formProgress} className="h-2" />
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {/* Main Form */}
-        <div className="lg:col-span-2">
+        <div>
           <Card className="border-gray-200">
             <CardHeader>
               <CardTitle className="text-gray-900 flex items-center gap-2">
@@ -144,7 +251,7 @@ export default function PublishRoute() {
                 </TabsList>
 
                 <TabsContent value="basic" className="space-y-6">
-                  <form onSubmit={handleSubmit} className="space-y-6">
+                  <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
                     {/* Route Details */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
@@ -175,7 +282,7 @@ export default function PublishRoute() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="departureDate" className="text-gray-700 font-medium">
                           <Calendar className="inline h-4 w-4 mr-1 text-blue-500" />
@@ -190,27 +297,34 @@ export default function PublishRoute() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="vehicleType" className="text-gray-700 font-medium">
-                          <Truck className="inline h-4 w-4 mr-1 text-blue-500" />
-                          Tipo de Vehículo
+                        <Label htmlFor="arrivalDate" className="text-gray-700 font-medium">
+                          <Calendar className="inline h-4 w-4 mr-1 text-blue-500" />
+                          Fecha de Llegada
                         </Label>
-                        <Select onValueChange={(value) => setFormData({...formData, vehicleType: value})}>
+                        <Input
+                          id="arrivalDate"
+                          type="date"
+                          value={formData.arrivalDate}
+                          onChange={(e) => setFormData({...formData, arrivalDate: e.target.value})}
+                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="vehicleId" className="text-gray-700 font-medium">
+                          <Truck className="inline h-4 w-4 mr-1 text-blue-500" />
+                          Selecciona tu Vehículo
+                        </Label>
+                        <Select value={formData.vehicleId} onValueChange={(value) => {
+                          const v = vehicles.find(v => String(v.id) === String(value));
+                          setFormData({...formData, vehicleId: value, vehicleType: v?.vehicle_type || ''});
+                        }}>
                           <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                            <SelectValue placeholder="Seleccionar tipo" />
+                            <SelectValue placeholder={vehiclesLoading ? 'Cargando...' : 'Seleccionar vehículo'} />
                           </SelectTrigger>
                           <SelectContent>
-                            {vehicleTypes.map((type) => (
-                              <SelectItem key={type.value} value={type.value}>
-                                <div className="flex items-center justify-between w-full">
-                                  <div className="flex items-center space-x-2">
-                                    <type.icon className="h-4 w-4" />
-                                    <span>{type.label}</span>
-                                  </div>
-                                  <div className="text-right">
-                                    <div className="text-xs text-gray-500">{type.capacity}</div>
-                                    <div className="text-xs font-medium text-blue-500">{type.price}</div>
-                                  </div>
-                                </div>
+                            {vehicles.map((v) => (
+                              <SelectItem key={v.id} value={String(v.id)}>
+                                {(v.name || v.plate || 'Vehículo')} • {translateVehicleType(v.vehicle_type) || 'Tipo no especificado'}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -249,8 +363,8 @@ export default function PublishRoute() {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="price" className="text-gray-700 font-medium">
-                          <Euro className="inline h-4 w-4 mr-1 text-blue-500" />
-                          Precio (Q)
+                          <Coins className="inline h-4 w-4 mr-1 text-blue-500" />
+                          Precio (Q.)
                         </Label>
                         <Input
                           id="price"
@@ -277,9 +391,9 @@ export default function PublishRoute() {
                       />
                     </div>
 
-                    <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white">
+                    <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white" disabled={!isValid || isSubmitting}>
                       <Plus className="h-4 w-4 mr-2" />
-                      Publicar Ruta
+                      {isSubmitting ? 'Publicando...' : 'Publicar Ruta'}
                     </Button>
                   </form>
                 </TabsContent>
@@ -307,7 +421,7 @@ export default function PublishRoute() {
                           <CalendarDays className="inline h-4 w-4 mr-1 text-blue-500" />
                           Frecuencia
                         </Label>
-                        <Select onValueChange={(value) => setFormData({...formData, frequency: value})}>
+                        <Select value={formData.frequency} onValueChange={(value) => setFormData({...formData, frequency: value})}>
                           <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Seleccionar frecuencia" />
                           </SelectTrigger>
@@ -387,139 +501,7 @@ export default function PublishRoute() {
           </Card>
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Quick Stats */}
-          <Card className="border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-gray-900 text-lg flex items-center">
-                <TrendingUp className="h-5 w-5 mr-2 text-blue-500" />
-                Estadísticas Rápidas
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Rutas Activas</span>
-                <Badge variant="secondary" className="bg-blue-100 text-blue-700">5</Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Cargas Completadas</span>
-                <Badge variant="secondary" className="bg-green-100 text-green-800">142</Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Ingresos del Mes</span>
-                <Badge variant="secondary" className="bg-purple-100 text-purple-800">Q2,450</Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Calificación</span>
-                <div className="flex items-center space-x-1">
-                  <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                  <span className="text-sm font-medium">4.8</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Market Insights */}
-          <Card className="border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-gray-900 text-lg flex items-center">
-                <Zap className="h-5 w-5 mr-2 text-[blue-500]" />
-                Insights del Mercado
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {marketInsights.map((insight, index) => (
-                  <div key={index} className="p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex justify-between items-start mb-2">
-                      <p className="font-medium text-gray-900">{insight.route}</p>
-                      <Badge variant="outline" className={
-                        insight.demand === 'Alta' ? 'bg-green-100 text-green-800 border-green-200' :
-                        insight.demand === 'Media' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
-                        'bg-red-100 text-red-800 border-red-200'
-                      }>
-                        {insight.demand}
-                      </Badge>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Precio promedio</span>
-                      <span className="text-sm font-medium text-gray-900">{insight.avgPrice}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Recent Routes */}
-          <Card className="border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-gray-900 text-lg flex items-center">
-                <Clock className="h-5 w-5 mr-2 text-[blue-500]" />
-                Rutas Recientes
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {recentRoutes.map((route) => (
-                  <div key={route.id} className="p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <p className="font-medium text-gray-900">{route.origin} → {route.destination}</p>
-                        <p className="text-sm text-gray-600">{route.date}</p>
-                      </div>
-                      <Badge variant={
-                        route.status === 'active' ? 'default' : 'secondary'
-                      } className={
-                        route.status === 'active' ? 'bg-[blue-500]' : 'bg-gray-100 text-gray-800'
-                      }>
-                        {route.status === 'active' ? 'Activa' : 'Completada'}
-                      </Badge>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-900">{route.price}</span>
-                      <div className="flex items-center space-x-1 text-sm text-gray-500">
-                        <Users className="h-3 w-3" />
-                        <span>{route.bookings} reservas</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Tips */}
-          <Card className="border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-gray-900 text-lg flex items-center">
-                <CheckCircle className="h-5 w-5 mr-2 text-[blue-500]" />
-                Consejos
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3 text-sm text-gray-600">
-                <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-[blue-500] rounded-full mt-2 flex-shrink-0"></div>
-                  <p>Incluye descripciones detalladas para atraer más clientes</p>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-[blue-500] rounded-full mt-2 flex-shrink-0"></div>
-                  <p>Establece precios competitivos basados en el mercado</p>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-[blue-500] rounded-full mt-2 flex-shrink-0"></div>
-                  <p>Mantén actualizada la información de tu vehículo</p>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-[blue-500] rounded-full mt-2 flex-shrink-0"></div>
-                  <p>Responde rápidamente a las solicitudes</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      </div>
       </div>
     </div>
   );

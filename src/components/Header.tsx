@@ -34,10 +34,13 @@ export default function Header() {
   return (
     <header className="bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 shadow-lg border-b border-purple-200 fixed top-0 left-0 right-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center space-x-2">
-            <Truck className="h-8 w-8 text-white" />
-            <span className="text-xl font-bold text-white">CargoConnect</span>
+        <div className="flex justify-between items-center h-16 md:h-20">
+          <Link to="/" className="flex items-center">
+            <img 
+              src="/Logos%20Vaiven/Logos%20en%20PNG/web%20logo%20oficial%20A.png" 
+              alt="VAIVEN Logo" 
+              className="h-16 md:h-24 w-auto object-contain"
+            />
           </Link>
 
           <nav className="hidden md:flex space-x-8">
@@ -106,21 +109,21 @@ export default function Header() {
 
       {isMenuOpen && (
         <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 border-t border-white/20">
+          <div className="px-4 pt-4 pb-6 space-y-2 bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 border-t border-white/20 shadow-lg">
             {navigationItems.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
-                className="text-white hover:text-yellow-300 block px-3 py-2 text-base font-medium"
+                className="text-white hover:text-yellow-300 hover:bg-white/10 block px-4 py-3 text-base font-medium rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item.name}
               </Link>
             ))}
             {!isAuthenticated && (
-              <div className="space-y-2 pt-4">
+              <div className="space-y-3 pt-4 border-t border-white/20">
                 <Button
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white"
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white py-3"
                   onClick={() => {
                     handleDashboardClick('client');
                     setIsMenuOpen(false);
@@ -130,7 +133,7 @@ export default function Header() {
                   Panel Cliente
                 </Button>
                 <Button
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white"
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white py-3"
                   onClick={() => {
                     handleDashboardClick('transporter');
                     setIsMenuOpen(false);

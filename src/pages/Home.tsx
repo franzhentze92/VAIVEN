@@ -5,9 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Truck, Users, Shield, MapPin, TrendingUp, Star, Sparkles, ArrowRight, Clock, CheckCircle, Zap } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Home: React.FC = () => {
+  const navigate = useNavigate();
+
+
+
+  const handleGetStartedClick = () => {
+    navigate('/pricing');
+  };
   const features = [
     {
       icon: <Truck className="h-8 w-8 text-white" />,
@@ -116,19 +123,9 @@ const Home: React.FC = () => {
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 px-8 py-6 text-lg rounded-xl font-semibold group"
+                  onClick={handleGetStartedClick}
                 >
-                  <Users className="h-6 w-6 mr-3" />
-                  Soy Cliente
-                  <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-                
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 px-8 py-6 text-lg rounded-xl font-semibold group"
-                >
-                  <Truck className="h-6 w-6 mr-3" />
-                  Soy Transportista
+                  🚀 Comenzar Ahora
                   <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
@@ -181,7 +178,7 @@ const Home: React.FC = () => {
               ¿Por qué elegir
               <br />
               <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                CargoConnect?
+                VAIVEN?
               </span>
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
@@ -230,7 +227,7 @@ const Home: React.FC = () => {
               ¿Cómo funciona
               <br />
               <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                CargoConnect?
+                VAIVEN?
               </span>
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
@@ -289,12 +286,13 @@ const Home: React.FC = () => {
             ¿Listo para optimizar tu logística?
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Únete a miles de empresas y transportistas que ya confían en CargoConnect para sus necesidades logísticas en Guatemala.
+            Únete a miles de empresas y transportistas que ya confían en VAIVEN para sus necesidades logísticas en Guatemala.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg" 
               className="bg-white text-blue-600 hover:bg-blue-50 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 px-8 py-6 text-lg rounded-xl font-semibold"
+              onClick={handleGetStartedClick}
             >
               Comenzar Gratis
             </Button>

@@ -37,6 +37,9 @@ export default function AuthModal({ isOpen, onClose, onAuth }: AuthModalProps) {
           <DialogTitle className="text-center">
             {authType === 'login' ? 'Iniciar Sesión' : 'Registrarse'}
           </DialogTitle>
+          <DialogDescription className="text-center">
+            {authType === 'login' ? 'Ingresa tus credenciales para acceder' : 'Crea una nueva cuenta para comenzar'}
+          </DialogDescription>
         </DialogHeader>
         
         <Tabs value={authType} onValueChange={(v) => setAuthType(v as 'login' | 'register')}>

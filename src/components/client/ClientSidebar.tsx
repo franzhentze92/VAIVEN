@@ -37,7 +37,7 @@ export default function ClientSidebar({ activeTab, onTabChange }: ClientSidebarP
 
   return (
     <div className={cn(
-      "bg-gradient-to-b from-blue-100 via-blue-50 to-indigo-100 border-r border-blue-200 h-full shadow-xl backdrop-blur-sm transition-all duration-300 ease-in-out relative",
+      "bg-white border-r border-neutral-200 h-full shadow-lg transition-all duration-300 ease-in-out relative",
       isCollapsed ? "w-16" : "w-64"
     )}>
       {/* Toggle Button */}
@@ -45,12 +45,12 @@ export default function ClientSidebar({ activeTab, onTabChange }: ClientSidebarP
         variant="ghost"
         size="sm"
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-8 bg-white border-2 border-blue-200 rounded-full p-1 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 z-10"
+        className="absolute -right-3 top-8 bg-white border-2 border-neutral-200 rounded-full p-1 hover:bg-neutral-50 hover:border-neutral-300 transition-all duration-200 z-10 shadow-md"
       >
         {isCollapsed ? (
-          <ChevronRight className="h-4 w-4 text-blue-600" />
+          <ChevronRight className="h-4 w-4 text-neutral-600" />
         ) : (
-          <ChevronLeft className="h-4 w-4 text-blue-600" />
+          <ChevronLeft className="h-4 w-4 text-neutral-600" />
         )}
       </Button>
 
@@ -60,7 +60,7 @@ export default function ClientSidebar({ activeTab, onTabChange }: ClientSidebarP
         isCollapsed ? "p-2" : "p-8"
       )}>
         <h2 className={cn(
-          "font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent transition-all duration-300",
+          "font-bold text-primary transition-all duration-300",
           isCollapsed ? "text-lg" : "text-2xl"
         )}>
           {isCollapsed ? "PC" : "Panel Cliente"}
@@ -80,11 +80,11 @@ export default function ClientSidebar({ activeTab, onTabChange }: ClientSidebarP
               key={item.id}
               variant="ghost"
               className={cn(
-                "w-full justify-start font-semibold transition-all duration-200 relative group",
-                isCollapsed ? "px-2 py-3 rounded-xl" : "px-5 py-3 rounded-xl",
+                "w-full justify-start font-medium transition-all duration-200 relative group",
+                isCollapsed ? "px-2 py-3 rounded-lg" : "px-5 py-3 rounded-lg",
                 isActive 
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:bg-blue-700 hover:to-indigo-700" 
-                  : "text-blue-700 hover:bg-blue-200/60 hover:text-blue-900"
+                  ? "bg-primary text-white shadow-md hover:bg-primary/90" 
+                  : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
               )}
               onClick={() => onTabChange(item.id)}
             >
@@ -98,7 +98,7 @@ export default function ClientSidebar({ activeTab, onTabChange }: ClientSidebarP
               
               {/* Tooltip for collapsed state */}
               {isCollapsed && (
-                <div className="absolute left-full ml-2 px-2 py-1 bg-blue-900 text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-20">
+                <div className="absolute left-full ml-2 px-2 py-1 bg-neutral-900 text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-20">
                   {item.label}
                 </div>
               )}

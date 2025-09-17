@@ -7,7 +7,7 @@ const NewsSection: React.FC = () => {
   const news = [
     {
       title: "Nueva Expansión a Colombia y Perú",
-      excerpt: "CargoConnect amplía su red de transportistas a dos nuevos países, ofreciendo más opciones de envío.",
+      excerpt: "VAIVEN amplía su red de transportistas a dos nuevos países, ofreciendo más opciones de envío.",
       date: "15 Nov 2024",
       category: "Expansión",
       image: "🌎",
@@ -39,7 +39,7 @@ const NewsSection: React.FC = () => {
             Últimas Noticias
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Mantente al día con las últimas novedades y actualizaciones de CargoConnect
+            Mantente al día con las últimas novedades y actualizaciones de VAIVEN
           </p>
         </div>
         

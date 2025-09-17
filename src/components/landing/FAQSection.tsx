@@ -6,8 +6,8 @@ import { HelpCircle } from 'lucide-react';
 const FAQSection: React.FC = () => {
   const faqs = [
     {
-      question: "¿Cómo funciona CargoConnect?",
-      answer: "CargoConnect conecta empresas que necesitan enviar carga con transportistas verificados. Publicas tu carga, recibes cotizaciones y eliges el mejor transportista para tu envío."
+      question: "¿Cómo funciona VAIVEN?",
+      answer: "VAIVEN conecta empresas que necesitan enviar carga con transportistas verificados. Publicas tu carga, recibes cotizaciones y eliges el mejor transportista para tu envío."
     },
     {
       question: "¿Qué tipos de carga pueden transportar?",
@@ -44,7 +44,7 @@ const FAQSection: React.FC = () => {
             Preguntas Frecuentes
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Encuentra respuestas a las preguntas más comunes sobre CargoConnect
+            Encuentra respuestas a las preguntas más comunes sobre VAIVEN
           </p>
         </div>
         
