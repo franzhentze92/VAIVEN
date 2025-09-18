@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import ChatDialog from "@/components/ChatDialog";
+import ClientTrackingView from "@/components/ClientTrackingView";
 import { 
   Truck, 
   Package, 
@@ -521,6 +523,10 @@ export default function ClientDashboard() {
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   
+  // Tracking dialog state
+  const [isTrackingOpen, setIsTrackingOpen] = useState(false);
+  const [selectedShipmentForTracking, setSelectedShipmentForTracking] = useState<any>(null);
+  
   // New state for transporter quote dialog
   const [isTransporterQuoteDialogOpen, setIsTransporterQuoteDialogOpen] = useState(false);
   const [selectedTransporterForQuote, setSelectedTransporterForQuote] = useState<any>(null);
@@ -657,7 +663,7 @@ export default function ClientDashboard() {
   const [selectedTransporterName, setSelectedTransporterName] = useState<string | null>(null);
   
   // Filter states for quotes
-  const [quoteStatusFilter, setQuoteStatusFilter] = useState<string>('pending');
+  const [quoteStatusFilter, setQuoteStatusFilter] = useState<string>('all');
   const [quoteSearchTerm, setQuoteSearchTerm] = useState<string>('');
   
   // Filter states for shipments
@@ -2009,14 +2015,14 @@ export default function ClientDashboard() {
   // Quote action handlers
   const handleAcceptQuote = async (quote: any) => {
     try {
-      // Update offer status to accepted
+      // Update offer status to accepted (but not paid yet)
       const { error: offerError } = await supabase
         .from('offers')
         .update({ status: 'accepted' })
         .eq('id', quote.id);
       if (offerError) throw offerError;
 
-      // Update shipment status to booked (active)
+      // Update shipment status to booked (but not active yet)
       const { error: shipmentError } = await supabase
         .from('shipments')
         .update({ status: 'booked' })
@@ -2026,6 +2032,11 @@ export default function ClientDashboard() {
       setClientQuotes(prev => prev.map(q => q.id === quote.id ? { ...q, status: 'accepted' } : q));
       // Reload shipments to update their status based on accepted offers
       await loadShipments();
+      
+      // Open payment dialog instead of proceeding directly
+      setSelectedQuote(quote);
+      setIsPaymentDialogOpen(true);
+      
       toast({ title: '✅ Oferta Aceptada', description: 'Procediendo al pago...' });
     } catch (err: any) {
       toast({ title: 'Error', description: err?.message || 'No se pudo aceptar la oferta', variant: 'destructive' });
@@ -2676,6 +2687,11 @@ export default function ClientDashboard() {
   const handleChatForShipment = (shipment: any) => {
     setSelectedShipment(shipment);
     setIsShipmentChatOpen(true);
+  };
+
+  const handleTrackingForShipment = (shipment: any) => {
+    setSelectedShipmentForTracking(shipment);
+    setIsTrackingOpen(true);
   };
 
   // Transporter action handlers
@@ -3861,11 +3877,16 @@ export default function ClientDashboard() {
                               )}
                               {shipment.status === 'booked' && (
                                 <div className="flex gap-2">
-                                  <Button size="sm" variant="outline" onClick={() => navigate(`/tracking/${shipment.id}`)}>
+                                  <Button size="sm" variant="outline" onClick={() => handleTrackingForShipment(shipment)}>
                                     <Package className="mr-2 h-4 w-4" />
                                     Ver Seguimiento
                                   </Button>
-                                  <Button size="sm" variant="secondary" onClick={() => handleChatForShipment(shipment)}>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    onClick={() => handleChatForShipment(shipment)}
+                                    className="bg-green-600 text-white border-green-600 hover:bg-green-700 hover:border-green-700"
+                                  >
                                     <MessageCircle className="mr-2 h-4 w-4" />
                                     Chatear con Transportista
                                   </Button>
@@ -3885,11 +3906,16 @@ export default function ClientDashboard() {
                               {/* Buttons for active shipments */}
                               {shipment.status === 'active' && (
                                 <div className="flex gap-2">
-                                  <Button size="sm" variant="outline" onClick={() => navigate(`/tracking/${shipment.id}`)}>
+                                  <Button size="sm" variant="outline" onClick={() => handleTrackingForShipment(shipment)}>
                                     <Package className="mr-2 h-4 w-4" />
                                     Ver Seguimiento
                                   </Button>
-                                  <Button size="sm" variant="secondary" onClick={() => handleChatForShipment(shipment)}>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    onClick={() => handleChatForShipment(shipment)}
+                                    className="bg-green-600 text-white border-green-600 hover:bg-green-700 hover:border-green-700"
+                                  >
                                     <MessageCircle className="mr-2 h-4 w-4" />
                                     Chatear con Transportista
                                   </Button>
@@ -5037,25 +5063,13 @@ GRANT ALL ON client_profiles TO authenticated;`;
           </DialogContent>
         </Dialog>
 
-        {/* Shipment Chat Dialog (placeholder) */}
-        <Dialog open={isShipmentChatOpen} onOpenChange={setIsShipmentChatOpen}>
-          <DialogContent className="sm:max-w-[520px]">
-            <DialogHeader>
-              <DialogTitle>Chat del Envío</DialogTitle>
-              <DialogDescription>Próximamente: chat integrado.</DialogDescription>
-            </DialogHeader>
-            {selectedShipment && (
-              <div className="space-y-3">
-                <div className="bg-gray-50 p-3 rounded">
-                  <p className="text-sm">Chat para el envío: <strong>{selectedShipment.title}</strong></p>
-                </div>
-                <div className="flex justify-end">
-                  <Button onClick={() => setIsShipmentChatOpen(false)}>Cerrar</Button>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
+        {/* Shipment Chat Dialog */}
+        <ChatDialog
+          isOpen={isShipmentChatOpen}
+          onClose={() => setIsShipmentChatOpen(false)}
+          shipment={selectedShipment}
+          currentUser={user}
+        />
         {/* Edit Shipment Dialog */}
         <Dialog open={isEditShipmentOpen} onOpenChange={setIsEditShipmentOpen}>
           <DialogContent className="sm:max-w-[780px] max-h-[80vh] overflow-y-auto">
@@ -5652,6 +5666,24 @@ GRANT ALL ON client_profiles TO authenticated;`;
 
       {/* Transporter Profile Dialog - Available in all tabs */}
       {renderTransporterProfileDialog()}
+
+      {/* Tracking Dialog */}
+      {selectedShipmentForTracking && (
+        <Dialog open={isTrackingOpen} onOpenChange={setIsTrackingOpen}>
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Package className="h-5 w-5" />
+                Seguimiento en Tiempo Real - {selectedShipmentForTracking.title}
+              </DialogTitle>
+              <DialogDescription>
+                Visualiza la ubicación en tiempo real de tu envío
+              </DialogDescription>
+            </DialogHeader>
+            <ClientTrackingView shipmentId={selectedShipmentForTracking.id} />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

@@ -147,7 +147,64 @@ export default function ShipmentForm() {
     }
   };
 
+  // Auto-calculate price when coordinates change
+  useEffect(() => {
+    if (formData.pickupCoordinates && formData.deliveryCoordinates && formData.weight && estimatedPrice !== null) {
+      console.log('🔄 Recalculating price due to coordinate change');
+      console.log('📍 Pickup:', formData.pickupCoordinates);
+      console.log('📍 Delivery:', formData.deliveryCoordinates);
+      
+      // Recalculate price when coordinates change
+      const calculateRealDistance = () => {
+        const R = 6371; // Earth's radius in km
+        const dLat = (formData.deliveryCoordinates.lat - formData.pickupCoordinates.lat) * Math.PI / 180;
+        const dLng = (formData.deliveryCoordinates.lng - formData.pickupCoordinates.lng) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(formData.pickupCoordinates.lat * Math.PI / 180) * Math.cos(formData.deliveryCoordinates.lat * Math.PI / 180) *
+                  Math.sin(dLng/2) * Math.sin(dLng/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+      };
+
+      const realDistance = calculateRealDistance();
+      const weight = parseFloat(formData.weight);
+      const pieces = parseFloat(formData.pieces) || 1; // Default to 1 piece if not specified
+      
+      // Base price calculation: weight + pieces factor
+      const weightPrice = weight * 2.5; // Q2.50 per kg
+      const piecesPrice = pieces * 5; // Q5.00 per piece
+      const basePrice = weightPrice + piecesPrice;
+      
+      const distanceMultiplier = Math.max(1, realDistance / 50); // Minimum 1x, increases with distance
+      const cargoTypeMultiplier = formData.cargoType === 'fragile' ? 1.3 : 
+                                 formData.cargoType === 'perishable' ? 1.2 : 
+                                 formData.cargoType === 'hazardous' ? 1.5 : 1.0;
+      
+      const newEstimatedPrice = Math.round(basePrice * distanceMultiplier * cargoTypeMultiplier);
+      
+      console.log('💰 Price calculation:', {
+        realDistance,
+        weight,
+        basePrice,
+        distanceMultiplier,
+        cargoTypeMultiplier,
+        newEstimatedPrice
+      });
+      
+      setEstimatedPrice(newEstimatedPrice);
+    }
+  }, [formData.pickupCoordinates, formData.deliveryCoordinates, formData.weight, formData.pieces, formData.cargoType]);
+
   const handleEstimatePrice = () => {
+    console.log('🔴 CALCULATE PRICE BUTTON CLICKED!');
+    console.log('📋 Form data:', {
+      originAddress: formData.originAddress,
+      destinationAddress: formData.destinationAddress,
+      weight: formData.weight,
+      pickupCoordinates: formData.pickupCoordinates,
+      deliveryCoordinates: formData.deliveryCoordinates
+    });
+
     if (!formData.originAddress || !formData.destinationAddress || !formData.weight) {
       alert("Completa origen, destino y peso para calcular el precio");
       return;
@@ -155,17 +212,48 @@ export default function ShipmentForm() {
 
     setIsCalculating(true);
     
-    // Mock price calculation (in a real app, use actual API)
+    // Calculate real distance using Haversine formula
+    const calculateRealDistance = () => {
+      const R = 6371; // Earth's radius in km
+      const dLat = (formData.deliveryCoordinates.lat - formData.pickupCoordinates.lat) * Math.PI / 180;
+      const dLng = (formData.deliveryCoordinates.lng - formData.pickupCoordinates.lng) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(formData.pickupCoordinates.lat * Math.PI / 180) * Math.cos(formData.deliveryCoordinates.lat * Math.PI / 180) *
+                Math.sin(dLng/2) * Math.sin(dLng/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    };
+
+    // Real price calculation using actual distance
     setTimeout(() => {
-      const mockDistance = Math.random() * 300 + 50; // 50-350 km
+      const realDistance = calculateRealDistance();
       const weight = parseFloat(formData.weight);
-      const basePrice = weight * 2.5; // Q2.50 per kg
-      const distanceMultiplier = mockDistance / 100; // Price increases with distance
+      const pieces = parseFloat(formData.pieces) || 1; // Default to 1 piece if not specified
+      
+      // Base price calculation: weight + pieces factor
+      const weightPrice = weight * 2.5; // Q2.50 per kg
+      const piecesPrice = pieces * 5; // Q5.00 per piece
+      const basePrice = weightPrice + piecesPrice;
+      
+      const distanceMultiplier = Math.max(1, realDistance / 50); // Minimum 1x, increases with distance
       const cargoTypeMultiplier = formData.cargoType === 'fragile' ? 1.3 : 
                                  formData.cargoType === 'perishable' ? 1.2 : 
                                  formData.cargoType === 'hazardous' ? 1.5 : 1.0;
       
       const estimatedPrice = Math.round(basePrice * distanceMultiplier * cargoTypeMultiplier);
+      
+      console.log('💰 PRICE CALCULATION RESULT:', {
+        realDistance,
+        weight,
+        pieces,
+        weightPrice,
+        piecesPrice,
+        basePrice,
+        distanceMultiplier,
+        cargoTypeMultiplier,
+        estimatedPrice
+      });
+      
       setEstimatedPrice(estimatedPrice);
       setIsCalculating(false);
     }, 1000);

@@ -13,6 +13,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import ChatDialog from "@/components/ChatDialog";
+import TrackingMap from "@/components/TrackingMap";
+import { useGPSTracking } from "@/hooks/useGPSTracking";
 import { 
   Truck, 
   Package, 
@@ -70,6 +73,9 @@ export default function TransporterDashboard() {
   const [selectedShipment, setSelectedShipment] = useState<any>(null);
   const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
   const [isViewShipmentOpen, setIsViewShipmentOpen] = useState(false);
+  const [isShipmentChatOpen, setIsShipmentChatOpen] = useState(false);
+  const [isTrackingMapOpen, setIsTrackingMapOpen] = useState(false);
+  const [selectedShipmentForTracking, setSelectedShipmentForTracking] = useState<any>(null);
   const [gpsTracking, setGpsTracking] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null);
   
@@ -368,6 +374,59 @@ export default function TransporterDashboard() {
     }
   }, [user?.id]);
 
+  // Periodically refresh tracking status
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Use a function to get current activeShipments state
+      setActiveShipments(currentShipments => {
+        if (currentShipments.length > 0) {
+          // Refresh tracking status for all shipments
+          const refreshTrackingStatus = async () => {
+            try {
+              console.log('🔄 Refreshing tracking status for all shipments...');
+              
+              const updatedShipments = await Promise.all(
+                currentShipments.map(async (shipment) => {
+                  try {
+                    const { data: trackingData, error } = await supabase
+                      .from('shipments')
+                      .select('tracking_enabled, tracking_started_at')
+                      .eq('id', shipment.id)
+                      .single();
+
+                    if (error) {
+                      console.error(`Error fetching tracking status for shipment ${shipment.id}:`, error);
+                      return shipment;
+                    }
+
+                    return {
+                      ...shipment,
+                      tracking_enabled: trackingData.tracking_enabled || false,
+                      tracking_started_at: trackingData.tracking_started_at
+                    };
+                  } catch (err) {
+                    console.error(`Error in tracking status refresh for shipment ${shipment.id}:`, err);
+                    return shipment;
+                  }
+                })
+              );
+
+              setActiveShipments(updatedShipments);
+              console.log('✅ Tracking status refreshed for all shipments');
+            } catch (err) {
+              console.error('❌ Error refreshing tracking status:', err);
+            }
+          };
+          
+          refreshTrackingStatus();
+        }
+        return currentShipments; // Return unchanged if no shipments
+      });
+    }, 5000); // Refresh every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []); // Empty dependency array
+
   useEffect(() => {
     if (currentTab === 'marketplace') refreshMarket();
     if (currentTab === 'active-shipments') refreshActiveShipments();
@@ -540,6 +599,18 @@ export default function TransporterDashboard() {
           comments: offer.comments,
           review: review || null, // Add review information
           rawOffer: offer,
+          // Add user_id for chat functionality
+          user_id: shipmentDetail?.user_id,
+          // Add acceptedOffer for chat functionality
+          acceptedOffer: {
+            id: offer.id,
+            shipment_id: offer.shipment_id,
+            transporter_user_id: offer.transporter_user_id,
+            transporter_name: offer.transporter_name,
+            amount: offer.amount,
+            status: offer.status,
+            comments: offer.comments
+          },
           // Add properties needed for stats calculation
           amount: offer.amount,
           hasReview: !!review,
@@ -550,7 +621,35 @@ export default function TransporterDashboard() {
       });
 
       console.log('🔄 Transformed shipments:', transformedShipments);
-      setActiveShipments(transformedShipments);
+      
+      // Refresh tracking status for all shipments
+      const shipmentsWithTrackingStatus = await Promise.all(
+        transformedShipments.map(async (shipment) => {
+          try {
+            const { data: trackingData, error } = await supabase
+              .from('shipments')
+              .select('tracking_enabled, tracking_started_at')
+              .eq('id', shipment.id)
+              .single();
+
+            if (error) {
+              console.error(`Error fetching tracking status for shipment ${shipment.id}:`, error);
+              return shipment;
+            }
+
+            return {
+              ...shipment,
+              tracking_enabled: trackingData.tracking_enabled || false,
+              tracking_started_at: trackingData.tracking_started_at
+            };
+          } catch (err) {
+            console.error(`Error in tracking status refresh for shipment ${shipment.id}:`, err);
+            return shipment;
+          }
+        })
+      );
+
+      setActiveShipments(shipmentsWithTrackingStatus);
     } catch (err) {
       console.error('❌ Error in refreshActiveShipments:', err);
       setActiveShipmentsError(err instanceof Error ? err.message : 'Error al cargar envíos activos');
@@ -1546,6 +1645,49 @@ export default function TransporterDashboard() {
     }
   };
 
+  // Handle chat for shipment
+  const handleChatForShipment = (shipment: any) => {
+    setSelectedShipment(shipment);
+    setIsShipmentChatOpen(true);
+  };
+
+  // Handle tracking for shipment
+  const handleStartTracking = async (shipment: any) => {
+    try {
+      // Get fresh tracking status from database
+      const { data: shipmentData, error } = await supabase
+        .from('shipments')
+        .select('tracking_enabled, tracking_started_at, current_latitude, current_longitude, last_location_update')
+        .eq('id', shipment.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching shipment tracking status:', error);
+        // Fallback to original shipment data
+        setSelectedShipmentForTracking(shipment);
+      } else {
+        // Merge fresh tracking data with shipment data
+        const updatedShipment = {
+          ...shipment,
+          tracking_enabled: shipmentData.tracking_enabled,
+          tracking_started_at: shipmentData.tracking_started_at,
+          current_latitude: shipmentData.current_latitude,
+          current_longitude: shipmentData.current_longitude,
+          last_location_update: shipmentData.last_location_update
+        };
+        console.log('🔍 Transporter - Fresh tracking status:', updatedShipment);
+        console.log('🔍 Transporter - tracking_enabled:', updatedShipment.tracking_enabled);
+        setSelectedShipmentForTracking(updatedShipment);
+      }
+    } catch (err) {
+      console.error('Error in handleStartTracking:', err);
+      setSelectedShipmentForTracking(shipment);
+    }
+
+    setIsTrackingMapOpen(true);
+  };
+
+
   // Ensure full shipment data before bidding
   const openBidForShipment = async (shipment: any) => {
     try {
@@ -2368,7 +2510,6 @@ export default function TransporterDashboard() {
                               <TableHead>Mi Oferta</TableHead>
                               <TableHead>Estado</TableHead>
                               <TableHead>Fecha</TableHead>
-                              <TableHead>Acciones</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -2391,12 +2532,6 @@ export default function TransporterDashboard() {
                           <TableCell>{getStatusBadge(bid.status)}</TableCell>
                           <TableCell>
                             {new Date(bid.createdAt).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell>
-                            <Button variant="outline" size="sm">
-                              <MessageCircle className="w-3 h-3 mr-1" />
-                              Chat
-                            </Button>
                           </TableCell>
                         </TableRow>
                             ))}
@@ -2649,16 +2784,17 @@ export default function TransporterDashboard() {
                           <div className="flex gap-2">
                             <Button 
                               size="sm" 
-                              onClick={() => navigate(`/tracking/${shipment.id}`)}
+                              onClick={() => handleStartTracking(shipment)}
                               disabled={isCompleted}
+                              className={shipment.tracking_enabled ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"}
                             >
                               <Navigation className="w-3 h-3 mr-1" />
-                              Iniciar Ruta
+                              {shipment.tracking_enabled ? "Ver Seguimiento" : "Ver Seguimiento"}
                             </Button>
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              onClick={() => navigate(`/chat/${shipment.id}`)}
+                              onClick={() => handleChatForShipment(shipment)}
                               disabled={isCompleted}
                             >
                               <MessageCircle className="w-3 h-3 mr-1" />
@@ -3590,6 +3726,42 @@ export default function TransporterDashboard() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Shipment Chat Dialog */}
+      <ChatDialog
+        isOpen={isShipmentChatOpen}
+        onClose={() => setIsShipmentChatOpen(false)}
+        shipment={selectedShipment}
+        currentUser={user}
+      />
+
+      {/* Tracking Dialog */}
+      {selectedShipmentForTracking && (
+        <Dialog open={isTrackingMapOpen} onOpenChange={setIsTrackingMapOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Navigation className="h-5 w-5" />
+                Seguimiento en Tiempo Real - {selectedShipmentForTracking.title}
+              </DialogTitle>
+              <DialogDescription>
+                Inicia el seguimiento GPS para que el cliente pueda ver la ubicación en tiempo real
+              </DialogDescription>
+            </DialogHeader>
+            <TrackingMap
+              key={`${selectedShipmentForTracking.id}-${selectedShipmentForTracking.tracking_enabled}`}
+              shipmentId={selectedShipmentForTracking.id}
+              isTracking={selectedShipmentForTracking.tracking_enabled || false}
+              onStartTracking={() => {
+                // This will be handled by the TrackingMap component
+              }}
+              onStopTracking={() => {
+                // This will be handled by the TrackingMap component
+              }}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
 
     </div>
   );
